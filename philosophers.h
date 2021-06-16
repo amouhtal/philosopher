@@ -3,15 +3,18 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/time.h>
 
 typedef struct s_philo1
 {
 	int value;
 	struct s_frame *frame;
+	int time_of_thread;
 }	t_philo1;
 
 typedef struct s_frame
 {
+	unsigned long start;
 	int nbr_of_philo;
 	int time_to_die;
 	int time_to_eat;
