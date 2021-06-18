@@ -1,3 +1,6 @@
+
+#ifndef PHILOSOPHERS_H
+# define PHILOSOPHERS_H
 #include <pthread.h>
 #include <errno.h>
 #include <stdio.h>
@@ -10,6 +13,8 @@ typedef struct s_philo1
 	int value;
 	struct s_frame *frame;
 	int time_of_thread;
+	unsigned long time_end;
+
 }	t_philo1;
 
 typedef struct s_frame
@@ -27,3 +32,5 @@ typedef struct s_frame
 }t_frame;
 
 int	ft_atoi(const char *str);
+
+#endif
