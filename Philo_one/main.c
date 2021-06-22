@@ -1,12 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/06/22 11:50:21 by amouhtal          #+#    #+#             */
+/*   Updated: 2021/06/22 14:54:15 by amouhtal         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philosophers.h"
-
-static unsigned long	get_time(void)
-{
-	struct timeval	current_time;
-
-	gettimeofday(&current_time, NULL);
-	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
-}
 
 static void	*chekin_nugget(void *arg)
 {
@@ -26,22 +30,29 @@ static void	*chekin_nugget(void *arg)
 				philo->value, time, philo->time_end);
 			pthread_mutex_unlock(&frame->main);
 		}
+		if (frame->nbr_of_meal == philo->nbr_of_meal)
+		{
+			pthread_mutex_lock(&frame->print);
+			printf("similation done\n");
+			pthread_mutex_unlock(&frame->main);
+		}
 		usleep(100);
 	}
 	return (NULL);
 }
 
-static void	print_(t_philo1 *philo, char *msg)
+static void	print_routine(t_philo1 *philo, char *msg, int sleep)
 {
 	t_frame	*frame;
 
 	frame = philo->frame;
 	philo->time_of_thread = get_time() - frame->start;
 	pthread_mutex_lock(&frame->print);
-	printf("%d %d\t%s \n", philo->time_of_thread, philo->value + 1, msg);
+	printf("%d\t%d\t%s \n", philo->time_of_thread, philo->value + 1, msg);
 	pthread_mutex_unlock(&frame->print);
+	if (sleep != -1)
+		usleep(sleep * 1000);
 }
-//1066337
 
 static void	*routine(void *arg)
 {
@@ -55,25 +66,50 @@ static void	*routine(void *arg)
 	time = get_time();
 	philo->time_end = time + frame->time_to_die;
 	pthread_create(&th, NULL, &chekin_nugget, arg);
-	pthread_detach(th);
 	while (1)
 	{
 		pthread_mutex_lock(&frame->fork[philo->value]);
-		print_(philo, "philo has taken first fork");
-		pthread_mutex_lock(&frame->fork[(philo->value + 1)
-			% frame->nbr_of_philo]);
-		print_(philo, "philo has taken second fork");
+		print_routine(philo, "philo has taken first fork", -1);
+		pthread_mutex_lock(&frame->fork[philo->lfork]);
+		print_routine(philo, "philo has taken second fork", -1);
 		philo->time_end = (time = get_time()) + frame->time_to_die;
-		print_(philo, "philo is eating");
-		usleep(frame->time_to_eat * 1000);
+		philo->nbr_of_meal++;
+		print_routine(philo, "philo is eating", frame->time_to_eat);
 		pthread_mutex_unlock(&frame->fork[philo->value]);
-		pthread_mutex_unlock(&frame->fork[(philo->value + 1)
-			% frame->nbr_of_philo]);
-		print_(philo, "philo is sleeping");
-		usleep(frame->time_to_sleep * 1000);
-		print_(philo, "philo is thinking");
+		pthread_mutex_unlock(&frame->fork[philo->rfork]);
+		print_routine(philo, "philo is sleeping", frame->time_to_sleep);
+		print_routine(philo, "philo is thinking", 1);
 	}
 	return (NULL);
+}
+
+t_frame	*intial(t_frame *frame, int ac, char **av)
+{
+	frame = (t_frame *) malloc(sizeof(t_frame));
+	if (!frame)
+		return (NULL);
+	if (ac < 5 || ac > 6)
+	{
+		printf("wrong numbers of arg\n");
+		return (NULL);
+	}
+	frame->nbr_of_philo = ft_atoi(av[1]);
+	frame->time_to_die = ft_atoi(av[2]);
+	frame->time_to_eat = ft_atoi(av[3]);
+	frame->time_to_sleep = ft_atoi(av[4]);
+	frame->nbr_of_meal = -1;
+	if (av[5])
+		frame->nbr_of_meal = ft_atoi(av[5]);
+	frame->philo = malloc(sizeof(t_philo1) * frame->nbr_of_philo);
+	if (!frame->philo)
+		return (NULL);
+	frame->fork = malloc(sizeof(pthread_mutex_t) * frame->nbr_of_philo);
+	if (!frame->fork)
+		return (NULL);
+	frame = mutex_init(frame);
+	if (!frame)
+		return (NULL);
+	return (frame);
 }
 
 int	main(int	ac,	char **av)
@@ -82,47 +118,22 @@ int	main(int	ac,	char **av)
 	pthread_t	th;
 	int			i;
 
-	i = 0;
-	frame = (t_frame *) malloc(sizeof(t_frame));
-	if (ac < 5 || ac > 6)
-	{
-		perror("wrong numbers of arg");
-		return (1);
-	}
-	frame->nbr_of_philo = ft_atoi(av[1]);
-	frame->time_to_die = ft_atoi(av[2]);
-	frame->time_to_eat = ft_atoi(av[3]);
-	frame->time_to_sleep = ft_atoi(av[4]);
-	frame->philo = malloc(sizeof(t_philo1) * frame->nbr_of_philo);
-	frame->fork = malloc(sizeof(pthread_mutex_t) * frame->nbr_of_philo);
-	i = 0;
-	while (i < frame->nbr_of_philo)
-	{
-		pthread_mutex_init(&frame->fork[i], NULL);
-		frame->philo[i].frame = frame;
-		frame->philo[i].value = i;
-		i++;
-	}
+	frame = NULL;
+	frame = intial(frame, ac, av);
+	if (!frame)
+		return (ft_free(&frame, NULL));
 	pthread_mutex_init(&frame->print, NULL);
 	pthread_mutex_init(&frame->main, NULL);
 	pthread_mutex_lock(&frame->main);
-	i = 0;
 	frame->start = get_time();
+	i = 0;
 	while (i < frame->nbr_of_philo)
 	{
-		if (pthread_create(&th, NULL, &routine,
-				(void *)(&frame->philo[i])) != 0)
-		{
-			perror("Failed to create thread");
-			return (1);
-		}
+		if (pthread_create(&th, NULL, &routine, (void *)(&frame->philo[i++])))
+			return (ft_free(&frame, "fail to crate threads\n"));
 		pthread_detach(th);
 		usleep(100);
-		i++;
 	}
 	pthread_mutex_lock(&frame->main);
-	free(frame->philo);
-	free(frame->fork);
-	free(frame);
-	return (0);
+	return (ft_free(&frame, NULL));
 }
