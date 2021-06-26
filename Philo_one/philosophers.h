@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 12:00:06 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/06/22 15:02:09 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/06/24 15:35:08 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <sys/time.h>
+
 
 typedef struct s_philo1
 {

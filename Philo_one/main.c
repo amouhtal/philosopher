@@ -6,17 +6,25 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 11:50:21 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/06/22 14:54:15 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/06/24 18:29:57 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-static void	*chekin_nugget(void *arg)
+unsigned long	get_time(void)
 {
-	unsigned long	time;
-	t_frame			*frame;
-	t_philo1		*philo;
+	struct timeval	current_time;
+
+	gettimeofday(&current_time, NULL);
+	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
+}
+
+static void *chekin_nugget(void *arg)
+{
+	unsigned long time;
+	t_frame *frame;
+	t_philo1 *philo;
 
 	philo = (t_philo1 *)arg;
 	frame = philo->frame;
@@ -27,7 +35,7 @@ static void	*chekin_nugget(void *arg)
 		{
 			pthread_mutex_lock(&frame->print);
 			printf("philo %d time : %lu timeofdie : %lu\n",
-				philo->value, time, philo->time_end);
+					philo->value, time, philo->time_end);
 			pthread_mutex_unlock(&frame->main);
 		}
 		if (frame->nbr_of_meal == philo->nbr_of_meal)
@@ -41,9 +49,9 @@ static void	*chekin_nugget(void *arg)
 	return (NULL);
 }
 
-static void	print_routine(t_philo1 *philo, char *msg, int sleep)
+static void print_routine(t_philo1 *philo, char *msg, int sleep)
 {
-	t_frame	*frame;
+	t_frame *frame;
 
 	frame = philo->frame;
 	philo->time_of_thread = get_time() - frame->start;
@@ -54,12 +62,12 @@ static void	print_routine(t_philo1 *philo, char *msg, int sleep)
 		usleep(sleep * 1000);
 }
 
-static void	*routine(void *arg)
+static void *routine(void *arg)
 {
-	pthread_t		th;
-	t_frame			*frame;
-	t_philo1		*philo;
-	unsigned long	time;
+	pthread_t th;
+	t_frame *frame;
+	t_philo1 *philo;
+	unsigned long time;
 
 	philo = (t_philo1 *)arg;
 	frame = philo->frame;
@@ -70,7 +78,7 @@ static void	*routine(void *arg)
 	{
 		pthread_mutex_lock(&frame->fork[philo->value]);
 		print_routine(philo, "philo has taken first fork", -1);
-		pthread_mutex_lock(&frame->fork[philo->lfork]);
+		pthread_mutex_lock(&frame->fork[philo->rfork]);
 		print_routine(philo, "philo has taken second fork", -1);
 		philo->time_end = (time = get_time()) + frame->time_to_die;
 		philo->nbr_of_meal++;
@@ -78,14 +86,14 @@ static void	*routine(void *arg)
 		pthread_mutex_unlock(&frame->fork[philo->value]);
 		pthread_mutex_unlock(&frame->fork[philo->rfork]);
 		print_routine(philo, "philo is sleeping", frame->time_to_sleep);
-		print_routine(philo, "philo is thinking", 1);
+		print_routine(philo, "philo is thinking", -1);
 	}
 	return (NULL);
 }
 
-t_frame	*intial(t_frame *frame, int ac, char **av)
+t_frame *intial(t_frame *frame, int ac, char **av)
 {
-	frame = (t_frame *) malloc(sizeof(t_frame));
+	frame = (t_frame *)malloc(sizeof(t_frame));
 	if (!frame)
 		return (NULL);
 	if (ac < 5 || ac > 6)
@@ -112,11 +120,11 @@ t_frame	*intial(t_frame *frame, int ac, char **av)
 	return (frame);
 }
 
-int	main(int	ac,	char **av)
+int main(int ac, char **av)
 {
-	t_frame		*frame;
-	pthread_t	th;
-	int			i;
+	t_frame *frame;
+	pthread_t th;
+	int i;
 
 	frame = NULL;
 	frame = intial(frame, ac, av);

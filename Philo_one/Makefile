@@ -1,13 +1,18 @@
+NAME = philo
 CC = gcc
 FLAGS = -Wall -Wextra -Werror
 SRCS = main.c util.c
-OBJ = $(SRCS=*.o)
-%.o=%.c
-	$(CC) $(FLAGS) -c $(SRCS) -o 
+OBJS = $(SRCS:.c=.o)
 
-all:
+%.o:%.c *.h
+	$(CC) $(FLAGS) -c $< -o $@ 
 
+all: *.h
+	@$(MAKE) $(NAME)
+$(NAME): $(OBJS) 
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 clean :
-	rm -rf *.c
+	rm -rf *.o
 fclean : clean
-	rm rf *.o
+	rm -rf $(NAME)
+re: fclean all
