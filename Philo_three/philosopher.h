@@ -6,18 +6,19 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:02:56 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/06/25 12:15:03 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/06/27 16:23:48 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILOSOPHER_H
 #define PHILOSOPHER_H
-#include<pthread.h>
-#include<stdio.h>
-#include<unistd.h>
-#include<stdlib.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
 #include <semaphore.h>
 #include <sys/time.h>
+#include <signal.h>
 # define SEMAPRINT "semamain"
 # define SEMAFORK "semafork"
 # define SEMAMAIN "semaprint"
@@ -29,6 +30,7 @@ typedef struct s_philo
 	unsigned long	time_end;
 	struct s_frame *frame;
 	int nbr_of_meal;
+	int				time_of_thread;
 }t_philo;
 
 typedef struct s_frame

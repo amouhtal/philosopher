@@ -6,19 +6,11 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 11:50:21 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/06/24 18:29:57 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/06/27 18:41:15 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-unsigned long	get_time(void)
-{
-	struct timeval	current_time;
-
-	gettimeofday(&current_time, NULL);
-	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
-}
 
 static void *chekin_nugget(void *arg)
 {
@@ -44,7 +36,7 @@ static void *chekin_nugget(void *arg)
 			printf("similation done\n");
 			pthread_mutex_unlock(&frame->main);
 		}
-		usleep(100);
+		usleep(500);
 	}
 	return (NULL);
 }
@@ -82,10 +74,12 @@ static void *routine(void *arg)
 		print_routine(philo, "philo has taken second fork", -1);
 		philo->time_end = (time = get_time()) + frame->time_to_die;
 		philo->nbr_of_meal++;
-		print_routine(philo, "philo is eating", frame->time_to_eat);
+		print_routine(philo, "philo is eating",-1);
+		usleep(frame->time_to_eat* 1000);
 		pthread_mutex_unlock(&frame->fork[philo->value]);
 		pthread_mutex_unlock(&frame->fork[philo->rfork]);
-		print_routine(philo, "philo is sleeping", frame->time_to_sleep);
+		print_routine(philo, "philo is sleeping", -1);
+		usleep(frame->time_to_sleep * 1000);
 		print_routine(philo, "philo is thinking", -1);
 	}
 	return (NULL);
@@ -138,7 +132,7 @@ int main(int ac, char **av)
 	while (i < frame->nbr_of_philo)
 	{
 		if (pthread_create(&th, NULL, &routine, (void *)(&frame->philo[i++])))
-			return (ft_free(&frame, "fail to crate threads\n"));
+			return (ft_free(&frame, "fail to create thread\n"));
 		pthread_detach(th);
 		usleep(100);
 	}

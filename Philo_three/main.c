@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:02:51 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/06/25 12:12:00 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/06/27 18:33:04 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,9 +85,22 @@ static void *chekin_nugget(void *arg)
 			printf("similation done\n");
 			sem_post(frame->main);
 		}
-		usleep(100);
+		usleep(1000);
 	}
 	return (NULL);
+}
+
+static void print_routine(t_philo *philo, char *msg, int sleep)
+{
+	t_frame *frame;
+
+	frame = philo->frame;
+	philo->time_of_thread = get_time() - frame->start;
+	sem_wait(frame->print);
+	printf("%d\t philo %d\t%s \n", philo->time_of_thread, philo->value + 1, msg);
+	sem_post(frame->print);
+	if (sleep != -1)
+		usleep(sleep * 1000);
 }
 
 void routine(t_philo *philo, t_frame *frame)
@@ -102,42 +115,17 @@ void routine(t_philo *philo, t_frame *frame)
 	while (1)
 	{
 		sem_wait(frame->forks);
-	
-		frame->time_of_thread = get_time() - frame->start;
-		sem_wait(frame->print);
-		printf("%lu philo %d take first fork\n",frame->time_of_thread, philo->value + 1);
-		sem_post(frame->print);
-
+		print_routine(philo, "take first fork", -1);
 		sem_wait(frame->forks);
-
+		print_routine(philo, "take seconde fork", -1);
+		philo->time_end = get_time() + frame->time_to_die;
 		frame->time_of_thread = get_time() - frame->start;
-		sem_wait(frame->print);
-		printf("%lu philo %d take seconde fork\n",frame->time_of_thread, philo->value + 1);
-		sem_post(frame->print);
-
-		philo->time_end = (time = get_time()) + frame->time_to_die;
-		frame->time_of_thread = get_time() - frame->start;
-
-		sem_wait(frame->print);
-		printf("%lu philo %d is eating\n",frame->time_of_thread, philo->value + 1);
-		sem_post(frame->print);
-		usleep(frame->time_to_eat * 1000);
+		print_routine(philo, "is eating", frame->time_to_eat);
 		philo->nbr_of_meal++;
-		printf("==> %d ===> %d\n",frame->nbr_of_meal, philo->nbr_of_meal);
-
 		sem_post(frame->forks);
 		sem_post(frame->forks);
-
-		frame->time_of_thread = get_time() - frame->start;
-		sem_wait(frame->print);
-		printf("%lu philo %d is sleeping\n",frame->time_of_thread, philo->value + 1);
-		sem_post(frame->print);
-		usleep(frame->time_to_sleep * 1000);
-
-		frame->time_of_thread = get_time() - frame->start;
-		sem_wait(frame->print);
-		printf("%lu philo %d is thinkin\n",frame->time_of_thread, philo->value + 1);
-		sem_post(frame->print);
+		print_routine(philo, "is sleeping", frame->time_to_sleep);
+		print_routine(philo, "is thinkin", -1);
 	}
 }
 
@@ -167,18 +155,17 @@ int main(int ac, char **av)
 	{
 		frame->pid = fork();
 		if (frame->pid == 0)
-		{
 			routine(&frame->philo[i], frame);
-		}
 		else
 		{
 			frame->pids[i] = frame->pid;
 			i++;
 		}		
-		usleep(500);
+		usleep(100);
 	}
 	i = 0;
-	while (i < frame->nbr_of_philo)
-		kill(frame->pids[i++]);
 	sem_wait(frame->main);
+	while (i < frame->nbr_of_philo)
+		kill(frame->pids[i++],SIGKILL);
+	return (ft_free(&frame, NULL));
 }

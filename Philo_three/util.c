@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:14:12 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/06/24 14:28:56 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/06/27 16:25:36 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,21 +37,25 @@ int	ft_atoi(const char *str)
 }
 int	ft_free(t_frame **frame, char *msg)
 {
-	if (*frame && (*frame)->philo)
+	int i;
+
+	if ((*frame) && (*frame)->philo)
 	{
 		free((*frame)->philo);
 		(*frame)->philo = NULL;
 	}
-	if (*frame && (*frame)->fork)
+	if ((*frame) && (*frame)->fork)
 	{
 		free((*frame)->fork);
 		(*frame)->fork = NULL;
 	}
-	if (*frame && (*frame))
+	if ((*frame) && (*frame))
 	{
 		free((*frame));
 		(*frame) = NULL;
 	}
+	if ((*frame)->pids)
+		free((*frame)->pids);
 	if (msg)
 		printf("%s", msg);
 	return (1);	
