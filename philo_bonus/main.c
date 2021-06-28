@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:02:51 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/06/27 18:33:04 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/06/28 15:41:29 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ t_frame *intial(t_frame *frame, int ac, char **av)
 	return (frame);
 }
 
-static void *chekin_nugget(void *arg)
+static void *check_if_starving(void *arg)
 {
 	unsigned long time;
 	t_frame *frame;
@@ -110,7 +110,7 @@ void routine(t_philo *philo, t_frame *frame)
 
 	time = get_time();
 	philo->time_end = time + frame->time_to_die;
-	pthread_create(&th, NULL, &chekin_nugget, (void*)philo);
+	pthread_create(&th, NULL, &check_if_starving, (void*)philo);
 	pthread_detach(th);
 	while (1)
 	{

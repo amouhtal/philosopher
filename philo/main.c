@@ -6,13 +6,13 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 11:50:21 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/06/27 18:41:15 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/06/28 16:25:10 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-static void *chekin_nugget(void *arg)
+// 781976 died 3 14118
+static void *check_if_starving(void *arg)
 {
 	unsigned long time;
 	t_frame *frame;
@@ -25,9 +25,9 @@ static void *chekin_nugget(void *arg)
 		time = get_time();
 		if (time > philo->time_end)
 		{
+			philo->timestamp = time - frame->start;
 			pthread_mutex_lock(&frame->print);
-			printf("philo %d time : %lu timeofdie : %lu\n",
-					philo->value, time, philo->time_end);
+			printf("%d died %d\n", philo->timestamp, philo->value);
 			pthread_mutex_unlock(&frame->main);
 		}
 		if (frame->nbr_of_meal == philo->nbr_of_meal)
@@ -46,9 +46,9 @@ static void print_routine(t_philo1 *philo, char *msg, int sleep)
 	t_frame *frame;
 
 	frame = philo->frame;
-	philo->time_of_thread = get_time() - frame->start;
+	philo->timestamp = get_time() - frame->start;
 	pthread_mutex_lock(&frame->print);
-	printf("%d\t%d\t%s \n", philo->time_of_thread, philo->value + 1, msg);
+	printf("%d\t%d\t%s \n", philo->timestamp, philo->value + 1, msg);
 	pthread_mutex_unlock(&frame->print);
 	if (sleep != -1)
 		usleep(sleep * 1000);
@@ -65,22 +65,22 @@ static void *routine(void *arg)
 	frame = philo->frame;
 	time = get_time();
 	philo->time_end = time + frame->time_to_die;
-	pthread_create(&th, NULL, &chekin_nugget, arg);
+	pthread_create(&th, NULL, &check_if_starving, arg);
 	while (1)
 	{
 		pthread_mutex_lock(&frame->fork[philo->value]);
-		print_routine(philo, "philo has taken first fork", -1);
+		print_routine(philo, "has taken a fork", -1);
 		pthread_mutex_lock(&frame->fork[philo->rfork]);
-		print_routine(philo, "philo has taken second fork", -1);
+		print_routine(philo, "has taken a fork", -1);
 		philo->time_end = (time = get_time()) + frame->time_to_die;
 		philo->nbr_of_meal++;
-		print_routine(philo, "philo is eating",-1);
+		print_routine(philo, "is eating",-1);
 		usleep(frame->time_to_eat* 1000);
 		pthread_mutex_unlock(&frame->fork[philo->value]);
 		pthread_mutex_unlock(&frame->fork[philo->rfork]);
-		print_routine(philo, "philo is sleeping", -1);
+		print_routine(philo, "is sleeping", -1);
 		usleep(frame->time_to_sleep * 1000);
-		print_routine(philo, "philo is thinking", -1);
+		print_routine(philo, "is thinking", -1);
 	}
 	return (NULL);
 }

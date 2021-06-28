@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 12:00:06 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/06/24 15:35:08 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/06/28 15:29:48 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ typedef struct s_philo1
 {
 	int				value;
 	struct s_frame	*frame;
-	int				time_of_thread;
+	int				timestamp;
 	unsigned long	time_end;
 	int				nbr_of_meal;
 	int				lfork;
