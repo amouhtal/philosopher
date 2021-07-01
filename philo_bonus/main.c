@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:02:51 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/06/28 15:41:29 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/01 18:12:41 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ unsigned long	get_time(void)
 	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
 }
 
-t_frame	*mutex_init(t_frame *frame)
+t_frame	*init_philo(t_frame *frame)
 {
 	int	i;
 
@@ -55,7 +55,7 @@ t_frame *intial(t_frame *frame, int ac, char **av)
 	frame->philo = malloc(sizeof(t_philo) * frame->nbr_of_philo);
 	if (!frame->philo)
 		return (NULL);
-	frame = mutex_init(frame);
+	frame = init_philo(frame);
 	if (!frame)
 		return (NULL);
 	return (frame);
@@ -85,7 +85,7 @@ static void *check_if_starving(void *arg)
 			printf("similation done\n");
 			sem_post(frame->main);
 		}
-		usleep(1000);
+		usleep(500);
 	}
 	return (NULL);
 }
@@ -121,9 +121,9 @@ void routine(t_philo *philo, t_frame *frame)
 		philo->time_end = get_time() + frame->time_to_die;
 		frame->time_of_thread = get_time() - frame->start;
 		print_routine(philo, "is eating", frame->time_to_eat);
+		sem_post(frame->forks);
+		sem_post(frame->forks);
 		philo->nbr_of_meal++;
-		sem_post(frame->forks);
-		sem_post(frame->forks);
 		print_routine(philo, "is sleeping", frame->time_to_sleep);
 		print_routine(philo, "is thinkin", -1);
 	}
@@ -166,6 +166,6 @@ int main(int ac, char **av)
 	i = 0;
 	sem_wait(frame->main);
 	while (i < frame->nbr_of_philo)
-		kill(frame->pids[i++],SIGKILL);
+		kill(frame->pids[i++], SIGKILL);
 	return (ft_free(&frame, NULL));
 }

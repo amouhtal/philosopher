@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 15:01:03 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/06/27 14:28:18 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/01 16:46:41 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,12 +58,33 @@ int	ft_free(t_frame **frame, char *msg)
 	return (1);	
 }
 
-unsigned long	get_time(void)
+t_frame *intial(t_frame *frame, int ac, char **av)
 {
-	struct timeval	current_time;
-
-	gettimeofday(&current_time, NULL);
-	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
+	frame = (t_frame *)malloc(sizeof(t_frame));
+	if (!frame)
+		return (NULL);
+	if (ac < 5 || ac > 6)
+	{
+		printf("wrong numbers of arg\n");
+		return (NULL);
+	}
+	frame->nbr_of_philo = ft_atoi(av[1]);
+	frame->time_to_die = ft_atoi(av[2]);
+	frame->time_to_eat = ft_atoi(av[3]);
+	frame->time_to_sleep = ft_atoi(av[4]);
+	frame->nbr_of_meal = -1;
+	if (av[5])
+		frame->nbr_of_meal = ft_atoi(av[5]);
+	frame->philo = malloc(sizeof(t_philo1) * frame->nbr_of_philo);
+	if (!frame->philo)
+		return (NULL);
+	frame->fork = malloc(sizeof(pthread_mutex_t) * frame->nbr_of_philo);
+	if (!frame->fork)
+		return (NULL);
+	frame = mutex_init(frame);
+	if (!frame)
+		return (NULL);
+	return (frame);
 }
 
 t_frame	*mutex_init(t_frame *frame)

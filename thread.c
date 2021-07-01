@@ -5,38 +5,125 @@
 # include <stdlib.h>
 # include <sys/time.h>
 
-int prime[10] = {20, 21, 22, 23, 24 , 25, 26, 27 , 28, 29};
 
+pthread_mutex_t *forks;
+pthread_mutex_t print;
 pthread_mutex_t block;
-pthread_mutex_t block2;
+
+int nbr_of_philo = 4;
+int time_to_sleep = 200;
+int time_to_eat = 200;
+unsigned long time_to_die = 410;
+
+typedef struct s_philo
+{
+	int index;
+	unsigned long died;
+}t_philo;
+
+
+unsigned long	get_time(void)
+{
+	struct timeval	current_time;
+
+	gettimeofday(&current_time, NULL);
+	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
+}
+
+void *check_starving(void *arg)
+{
+	unsigned long time;
+	t_philo *philo;
+
+	philo = (t_philo *)arg;
+	while (1)
+	{
+		time = get_time();
+		if (time > philo->died)
+		{
+			pthread_mutex_lock(&print);
+			printf("%d is died\n", philo->index + 1);
+			pthread_mutex_unlock(&block);
+		}
+		//sleep(500);
+	}
+	return NULL;
+}
 
 void *routine(void *arg)
 {
 	int i;
+	t_philo *philo;
+	pthread_t th;
+	philo = (t_philo*)arg;
+	philo->died = 0;
+	philo->died = get_time() + time_to_die;
+	pthread_create(&th, NULL, &check_starving, arg);
+	// pthread_detach(th);
+	while (1)
+	{
+		pthread_mutex_lock(&forks[philo->index]);
 
-	// pthread_mutex_lock(&block);
-	i = *(int*)arg;
-	write(1,"hello world 222\n", 16);
-	// pthread_mutex_unlock(&block);
+		pthread_mutex_lock(&print);
+		printf("%d take fork \n", philo->index + 1);
+		pthread_mutex_unlock(&print);
+
+		pthread_mutex_lock(&forks[philo->index + 1 % nbr_of_philo]);
+
+		pthread_mutex_lock(&print);
+		printf("%d take fork \n", philo->index + 1);
+		pthread_mutex_unlock(&print);
+
+			philo->died = get_time() + time_to_die ;
+
+		pthread_mutex_lock(&print);
+		printf("%d is eating \n", philo->index + 1);
+		pthread_mutex_unlock(&print);
+		usleep(time_to_eat * 1000);
+		pthread_mutex_unlock(&forks[philo->index]);
+		pthread_mutex_unlock(&forks[philo->index + 1 % nbr_of_philo]);
+
+		pthread_mutex_lock(&print);
+		printf("%d is sleeping \n", philo->index + 1);
+		pthread_mutex_unlock(&print);
+		usleep(time_to_sleep * 1000);
+		
+		pthread_mutex_lock(&print);
+		printf("%d is thinkin \n", philo->index + 1);
+		pthread_mutex_unlock(&print);
+	}
 	return NULL;
+
 }
 
 int main(int ac, char **av)
 {
 	pthread_t th;
+	t_philo *philo;
+
 	int i;
 
 	i = 0;
 	pthread_mutex_init(&block, NULL);
-	pthread_mutex_init(&block2, NULL);
+	forks = malloc(sizeof(sizeof(pthread_mutex_t) * nbr_of_philo));
+	philo = malloc(sizeof(t_philo) * nbr_of_philo);
+	pthread_mutex_lock(&block);
 
-	while (i < 100000)
+	i = 0;
+	while (i < nbr_of_philo)
 	{
-		if (pthread_create(&th, NULL, &routine, &i))
-			perror("Fail to create thread\n");
-		pthread_detach(th);
+		philo[i].index = i;
+		pthread_mutex_init(&forks[i], NULL);
 		i++;
 	}
-	while (1)
-		;
+	pthread_mutex_init(&print, NULL);
+	i = 0;
+	while (i < nbr_of_philo)
+	{
+		if (pthread_create(&th, NULL, &routine, (void *)&philo[i++]))
+			perror("Fail to create thread\n");
+		pthread_detach(th);
+		usleep(100);
+	}
+	pthread_mutex_lock(&block);
 }

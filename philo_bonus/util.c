@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:14:12 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/06/27 16:25:36 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/01 18:15:15 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,13 +49,13 @@ int	ft_free(t_frame **frame, char *msg)
 		free((*frame)->fork);
 		(*frame)->fork = NULL;
 	}
-	if ((*frame) && (*frame))
+	if ((*frame) && (*frame)->pids)
+		free((*frame)->pids);
+	if ((*frame))
 	{
 		free((*frame));
 		(*frame) = NULL;
 	}
-	if ((*frame)->pids)
-		free((*frame)->pids);
 	if (msg)
 		printf("%s", msg);
 	return (1);	

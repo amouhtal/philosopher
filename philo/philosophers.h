@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 12:00:06 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/06/28 15:29:48 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/01 16:42:29 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,6 @@ typedef struct s_frame
 
 int						ft_atoi(const char *str);
 int						ft_free(t_frame **frame, char *msg);
-unsigned long			get_time(void);
 t_frame					*mutex_init(t_frame *frame);
+t_frame					*intial(t_frame *frame, int ac, char **av);
 #endif
