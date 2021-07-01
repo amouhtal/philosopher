@@ -1,20 +1,42 @@
-#include <stdio.h>
-#include <pthread.h>
+# include <pthread.h>
+# include <errno.h>
+# include <stdio.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include <sys/time.h>
 
-void* routine()
+int prime[10] = {20, 21, 22, 23, 24 , 25, 26, 27 , 28, 29};
+
+pthread_mutex_t block;
+pthread_mutex_t block2;
+
+void *routine(void *arg)
 {
-	printf("routine \n");
-	sleep(4);
+	int i;
+
+	// pthread_mutex_lock(&block);
+	i = *(int*)arg;
+	write(1,"hello world 222\n", 16);
+	// pthread_mutex_unlock(&block);
 	return NULL;
 }
 
-int	main()
+int main(int ac, char **av)
 {
-	pthread_t t1, t2;
+	pthread_t th;
+	int i;
 
-	pthread_create(&t1, NULL, &routine, NULL);
-	pthread_create(&t2, NULL, &routine, NULL);
-	pthread_join(t1, NULL);
-	pthread_join(t2, NULL);
-	return (0);
+	i = 0;
+	pthread_mutex_init(&block, NULL);
+	pthread_mutex_init(&block2, NULL);
+
+	while (i < 100000)
+	{
+		if (pthread_create(&th, NULL, &routine, &i))
+			perror("Fail to create thread\n");
+		pthread_detach(th);
+		i++;
+	}
+	while (1)
+		;
 }
