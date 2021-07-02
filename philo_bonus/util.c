@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:14:12 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/01 18:15:15 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/02 18:50:09 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,28 +35,48 @@ int	ft_atoi(const char *str)
 	}
 	return (res * sign);
 }
-int	ft_free(t_frame **frame, char *msg)
+
+uint64_t time_to_die(int appended_time)
+{
+	uint64_t time;
+
+	time = get_time();
+	return (time + appended_time);
+}
+void	kill_process(t_frame *frame)
 {
 	int i;
 
-	if ((*frame) && (*frame)->philo)
+	sem_wait((frame)->main);
+	i = 0;
+	while (i < (frame)->nbr_of_philo)
+		kill(frame->pids[i++], SIGKILL);
+}
+
+int	ft_free(t_frame *frame, char *msg)
+{
+	if (frame && frame->philo)
 	{
-		free((*frame)->philo);
-		(*frame)->philo = NULL;
+		free(frame->philo);
+		frame->philo = NULL;
 	}
-	if ((*frame) && (*frame)->fork)
+	if (frame && frame->fork)
 	{
-		free((*frame)->fork);
-		(*frame)->fork = NULL;
+		free(frame->fork);
+		frame->fork = NULL;
 	}
-	if ((*frame) && (*frame)->pids)
-		free((*frame)->pids);
-	if ((*frame))
+	if (frame && frame->pids)
+		free(frame->pids);
+	if (frame)
 	{
-		free((*frame));
-		(*frame) = NULL;
+		free(frame);
+		frame = NULL;
 	}
 	if (msg)
+	{
 		printf("%s", msg);
-	return (1);	
-}
+		return 1;
+	}
+	kill_process(frame);
+	return (0);	
+} 

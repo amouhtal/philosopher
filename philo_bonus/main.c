@@ -6,13 +6,13 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:02:51 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/01 18:12:41 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/02 18:53:49 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
 
-unsigned long	get_time(void)
+uint64_t	get_time(void)
 {
 	struct timeval	current_time;
 
@@ -35,7 +35,7 @@ t_frame	*init_philo(t_frame *frame)
 	return (frame);
 }
 
-t_frame *intial(t_frame *frame, int ac, char **av)
+t_frame *init_frame(t_frame *frame, int ac, char **av)
 {
 	frame = (t_frame *)malloc(sizeof(t_frame));
 	if (!frame)
@@ -58,6 +58,9 @@ t_frame *intial(t_frame *frame, int ac, char **av)
 	frame = init_philo(frame);
 	if (!frame)
 		return (NULL);
+	sem_unlink(SEMAMAIN);
+	sem_unlink(SEMAFORK);
+	sem_unlink(SEMAPRINT);
 	return (frame);
 }
 
@@ -75,8 +78,8 @@ static void *check_if_starving(void *arg)
 		if (time > philo->time_end)
 		{
 			sem_wait(frame->print);
-			printf("philo %d time : %lu timeofdie : %lu\n",
-					philo->value, time, philo->time_end);
+			philo->timestamp = time - frame->start;
+			printf("%llu died %d\n", philo->timestamp, philo->value + 1);
 			sem_post(frame->main);
 		}
 		if (frame->nbr_of_meal == philo->nbr_of_meal)
@@ -85,7 +88,7 @@ static void *check_if_starving(void *arg)
 			printf("similation done\n");
 			sem_post(frame->main);
 		}
-		usleep(500);
+		usleep(1000);
 	}
 	return (NULL);
 }
@@ -99,51 +102,44 @@ static void print_routine(t_philo *philo, char *msg, int sleep)
 	sem_wait(frame->print);
 	printf("%d\t philo %d\t%s \n", philo->time_of_thread, philo->value + 1, msg);
 	sem_post(frame->print);
-	if (sleep != -1)
+	if (sleep != NOT)
 		usleep(sleep * 1000);
 }
 
-void routine(t_philo *philo, t_frame *frame)
+void	routine(t_philo *philo, t_frame *frame)
 {
 	pthread_t th;
-	unsigned long time;
 
-	time = get_time();
-	philo->time_end = time + frame->time_to_die;
 	pthread_create(&th, NULL, &check_if_starving, (void*)philo);
 	pthread_detach(th);
+	philo->time_end = time_to_die(frame->time_to_die);
 	while (1)
 	{
 		sem_wait(frame->forks);
-		print_routine(philo, "take first fork", -1);
+		print_routine(philo, "has taken a fork", NOT);
 		sem_wait(frame->forks);
-		print_routine(philo, "take seconde fork", -1);
-		philo->time_end = get_time() + frame->time_to_die;
-		frame->time_of_thread = get_time() - frame->start;
+		print_routine(philo, "has taken a fork", NOT);
+		philo->time_end = time_to_die(frame->time_to_die);
 		print_routine(philo, "is eating", frame->time_to_eat);
 		sem_post(frame->forks);
 		sem_post(frame->forks);
-		philo->nbr_of_meal++;
+		if (frame->nbr_of_meal != NOT)
+			philo->nbr_of_meal++;
 		print_routine(philo, "is sleeping", frame->time_to_sleep);
-		print_routine(philo, "is thinkin", -1);
+		print_routine(philo, "is thinkin", NOT);
 	}
 }
 
-int main(int ac, char **av)
+int	main(int ac, char **av)
 {
 	t_frame *frame;
-	t_philo *philo;
-	pthread_t th;
 	int i;
 
 	i = 0;
 	frame = NULL;
-	frame = intial(frame, ac, av);
+	frame = init_frame(frame, ac, av);
 	if (!frame)
-		return (ft_free(&frame, NULL));
-	sem_unlink(SEMAMAIN);
-	sem_unlink(SEMAFORK);
-	sem_unlink(SEMAPRINT);
+		return (ft_free(frame, NULL));
 
 	frame->main =  sem_open(SEMAMAIN, O_CREAT, 0644, 1);
 	frame->forks = sem_open(SEMAFORK, O_CREAT, 0644, frame->nbr_of_philo);
@@ -157,15 +153,8 @@ int main(int ac, char **av)
 		if (frame->pid == 0)
 			routine(&frame->philo[i], frame);
 		else
-		{
-			frame->pids[i] = frame->pid;
-			i++;
-		}		
+			frame->pids[i++] = frame->pid;
 		usleep(100);
 	}
-	i = 0;
-	sem_wait(frame->main);
-	while (i < frame->nbr_of_philo)
-		kill(frame->pids[i++], SIGKILL);
-	return (ft_free(&frame, NULL));
+	return (ft_free(frame, NULL));
 }

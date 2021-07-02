@@ -1,4 +1,16 @@
-NAME = push_swap
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2021/07/02 13:02:04 by amouhtal          #+#    #+#              #
+#    Updated: 2021/07/02 14:57:28 by amouhtal         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+NAME = philo_bonus
 SRCS = main.c util.c
 OBJS = $(SRCS:.c=.o)
 
@@ -6,7 +18,7 @@ OBJS = $(SRCS:.c=.o)
 CC = gcc
 FLAGS = -Wall -Wextra -Werror
 %.o:%.c *.h
-	$(cc) $(FLAGS) -c $< -o $@
+	$(CC) $(FLAGS) -c $< -o $@
 
 all: *.h
 	@$(MAKE) $(NAME) 
