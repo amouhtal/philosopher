@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 12:00:06 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/02 18:28:07 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/03 11:54:52 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ typedef struct s_philo1
 	uint64_t		nbr_of_meal;
 	int				lfork;
 	int				rfork;
-	int				i;
+	int				one_meal;
 }	t_philo1;
 
 typedef struct s_frame

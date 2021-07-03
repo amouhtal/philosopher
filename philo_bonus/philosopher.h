@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:02:56 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/02 17:43:47 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/03 12:14:27 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,29 +28,31 @@
 typedef struct s_philo
 {
 	int				value;
-	uint64_t		time_end;
-	struct s_frame	*frame;
-	uint64_t		timestamp;
 	int				nbr_of_meal;
 	int				time_of_thread;
+	int				one_meal;
+	struct s_frame	*frame;
+	uint64_t		time_end;
+	uint64_t		timestamp;
 }	t_philo;
 
 typedef struct s_frame
 {
 	t_philo			*philo;
-	int				*pids;
+	pthread_mutex_t	*fork;
 	uint64_t		start;
 	uint64_t		time_of_thread;
-	int				nbr_of_philo;
 	uint64_t		time_to_die;
 	uint64_t		time_to_eat;
 	uint64_t		time_to_sleep;
+	int				*pids;
 	int				nbr_of_meal;
+	int already_eated;
+	int				nbr_of_philo;
 	pid_t			pid;
 	sem_t			*forks;
 	sem_t			*main;
 	sem_t			*print;
-	pthread_mutex_t	*fork;
 }	t_frame;
 
 int			ft_atoi(const char *str);
