@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 15:01:03 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/03 12:04:59 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/04 15:02:34 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,13 @@ int	ft_atoi(const char *str)
 
 int	ft_free(t_frame *frame, char *msg)
 {
+	int i = 0;
+
+	pthread_mutex_destroy(&frame->print);
+	while (i < frame->nbr_of_philo )
+	{
+		pthread_mutex_destroy(&frame->fork[i++]);
+	}
 	if (frame && frame->philo)
 	{
 		free(frame->philo);
@@ -47,7 +54,7 @@ int	ft_free(t_frame *frame, char *msg)
 	{
 		free(frame->fork);
 		frame->fork = NULL;
-	}
+	}	
 	if (frame)
 	{
 		free(frame);
@@ -58,6 +65,7 @@ int	ft_free(t_frame *frame, char *msg)
 		printf("%s", msg);
 		return (1);
 	}
+
 	return (0);	
 }
 

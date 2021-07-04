@@ -6,12 +6,12 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 11:50:21 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/03 18:32:19 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/04 15:26:31 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-// 83486
+// 292416
 void ft_putnbr_fd(uint64_t n, int fd)
 {
 	char str[13];
@@ -39,7 +39,7 @@ uint64_t get_time(void)
 	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
 }
 
-void check_if_sated(t_philo1 *philo)
+int check_if_sated(t_philo1 *philo)
 {
 	t_frame *frame;
 
@@ -53,34 +53,28 @@ void check_if_sated(t_philo1 *philo)
 	{
 		pthread_mutex_lock(&frame->print);
 		write(1, "similation done\n", 16);
-		pthread_mutex_unlock(&frame->main);
+		return (0);
 	}
+	return (1);
 }
 
-static void *check_if_starving(void *arg)
+int check_if_starving(t_philo1 *philo)
 {
 	uint64_t time;
 	t_frame *frame;
-	t_philo1 *philo;
 
-	philo = (t_philo1 *)arg;
 	frame = philo->frame;
-	philo->time_end = time_to_die(frame->time_to_die);
-	while (1)
+	time = get_time();
+	if (time > philo->time_end)
 	{
-		time = get_time();
-		if (time > philo->time_end)
-		{
-			philo->timestamp = time - frame->start;
-			pthread_mutex_lock(&frame->print);
-			printf("%llu died %d\n", philo->timestamp, philo->value + 1);
-			pthread_mutex_unlock(&frame->main);
-		}
-		if (frame->nbr_of_meal == philo->nbr_of_meal)
-			check_if_sated(philo);
-		usleep(100);
+		pthread_mutex_lock(&frame->print);
+		philo->timestamp = time - frame->start;
+		printf("%llu died %d\n", philo->timestamp, philo->value + 1);
+		return (0);
 	}
-	return (NULL);
+	if (frame->nbr_of_meal == philo->nbr_of_meal)
+		return (check_if_sated(philo));
+	return (1);
 }
 
 static void print_routine(t_philo1 *philo, char msg, int sleep)
@@ -99,7 +93,6 @@ static void print_routine(t_philo1 *philo, char msg, int sleep)
 		write(1, "is sleeping\n", 12);
 	else if (msg == '3')
 		write(1, "is thinking\n", 12);
-	// write(1, msg, 15);
 	pthread_mutex_unlock(&philo->frame->print);
 	if (sleep != NOT)
 		usleep(sleep * 1000);
@@ -107,12 +100,10 @@ static void print_routine(t_philo1 *philo, char msg, int sleep)
 
 static void *routine(void *arg)
 {
-	pthread_t th;
 	t_philo1 *philo;
 
 	philo = (t_philo1 *)arg;
-	pthread_create(&th, NULL, &check_if_starving, arg);
-	pthread_detach(th);
+	philo->time_end = time_to_die(philo->frame->time_to_die);
 	while (1)
 	{
 		pthread_mutex_lock(&philo->frame->fork[philo->value]);
@@ -141,8 +132,6 @@ int main(int ac, char **av)
 	if (!frame)
 		return (ft_free(frame, NULL));
 	pthread_mutex_init(&frame->print, NULL);
-	pthread_mutex_init(&frame->main, NULL);
-	pthread_mutex_lock(&frame->main);
 	frame->start = get_time();
 	i = -1;
 	while (++i < frame->nbr_of_philo)
@@ -152,6 +141,14 @@ int main(int ac, char **av)
 		pthread_detach(th);
 		usleep(100);
 	}
-	pthread_mutex_lock(&frame->main);
-	return (ft_free(frame, NULL));
+	while (1)
+	{
+		i = 0;
+		while (i < frame->nbr_of_philo)
+		{
+			// usleep(1);
+			if (!check_if_starving(&frame->philo[i++]))
+				return (ft_free(frame, NULL));
+		}
+	}
 }

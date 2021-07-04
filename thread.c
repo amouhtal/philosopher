@@ -96,34 +96,19 @@ void *routine(void *arg)
 
 }
 
+void check(char **str)
+{
+	*str = "hello";
+}
+
 int main(int ac, char **av)
 {
 	pthread_t th;
 	t_philo *philo;
 
-	int i;
+	char *str = "mouhtal";
 
-	i = 0;
-	pthread_mutex_init(&block, NULL);
-	forks = malloc(sizeof(sizeof(pthread_mutex_t) * nbr_of_philo));
-	philo = malloc(sizeof(t_philo) * nbr_of_philo);
-	pthread_mutex_lock(&block);
-
-	i = 0;
-	while (i < nbr_of_philo)
-	{
-		philo[i].index = i;
-		pthread_mutex_init(&forks[i], NULL);
-		i++;
-	}
-	pthread_mutex_init(&print, NULL);
-	i = 0;
-	while (i < nbr_of_philo)
-	{
-		if (pthread_create(&th, NULL, &routine, (void *)&philo[i++]))
-			perror("Fail to create thread\n");
-		pthread_detach(th);
-		usleep(100);
-	}
-	pthread_mutex_lock(&block);
+	printf("before: |%s|\n", str);
+	check(&str);
+	printf("after: |%s|\n", str);
 }
