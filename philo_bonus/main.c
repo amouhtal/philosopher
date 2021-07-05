@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:02:51 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/03 17:44:42 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/05 17:07:32 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ int	main(int ac, char **av)
 
 	i = 0;
 	frame = NULL;
-	frame = init_frame(frame, ac, av);
+	frame = init_frame(&frame, ac, av);
 	if (!frame)
 		return (ft_free(frame, "allocation failed !\n"));
 	frame->main = sem_open(SEMAMAIN, O_CREAT, 0644, 1);

@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 15:01:03 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/04 15:02:34 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/05 17:56:49 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,42 +36,9 @@ int	ft_atoi(const char *str)
 	return (res * sign);
 }
 
-int	ft_free(t_frame *frame, char *msg)
+uint64_t	time_to_die(int appended_time)
 {
-	int i = 0;
-
-	pthread_mutex_destroy(&frame->print);
-	while (i < frame->nbr_of_philo )
-	{
-		pthread_mutex_destroy(&frame->fork[i++]);
-	}
-	if (frame && frame->philo)
-	{
-		free(frame->philo);
-		frame->philo = NULL;
-	}
-	if (frame && frame->fork)
-	{
-		free(frame->fork);
-		frame->fork = NULL;
-	}	
-	if (frame)
-	{
-		free(frame);
-		frame = NULL;
-	}
-	if (msg)
-	{
-		printf("%s", msg);
-		return (1);
-	}
-
-	return (0);	
-}
-
-uint64_t time_to_die(int appended_time)
-{
-	uint64_t time;
+	uint64_t	time;
 
 	time = get_time();
 	return (time + appended_time);
@@ -89,40 +56,36 @@ t_frame	*mutex_init(t_frame *frame)
 			return (NULL);
 		frame->philo[i].frame = frame;
 		frame->philo[i].value = i;
-		frame->philo[i].one_meal  = 0;
+		frame->philo[i].one_meal = 0;
 		frame->philo[i].nbr_of_meal = 0;
-		frame->philo[i].rfork = (frame->philo[i].value + 1) % frame->nbr_of_philo;
+		frame->philo[i].rfork = (frame->philo[i].value + 1)
+			% frame->nbr_of_philo;
 		frame->philo[i].lfork = frame->philo[i].value;
 		i++;
 	}
 	return (frame);
 }
 
-t_frame *intial(t_frame *frame, int ac, char **av)
+t_frame	*intial(t_frame **frame, int ac, char **av)
 {
-	frame = (t_frame *)malloc(sizeof(t_frame));
-	if (!frame)
+	*frame = (t_frame *)malloc(sizeof(t_frame));
+	if (!(*frame))
 		return (NULL);
 	if (ac < 5 || ac > 6)
 	{
 		printf("wrong numbers of arg\n");
 		return (NULL);
 	}
-	frame->nbr_of_philo = ft_atoi(av[1]);
-	frame->time_to_die = ft_atoi(av[2]);
-	frame->time_to_eat = ft_atoi(av[3]);
-	frame->time_to_sleep = ft_atoi(av[4]);
-	frame->nbr_of_meal = -1;
-	if (av[5])
-		frame->nbr_of_meal = ft_atoi(av[5]);
-	frame->philo = malloc(sizeof(t_philo1) * frame->nbr_of_philo);
-	if (!frame->philo)
+	if (!ft_init_arg((frame), av))
 		return (NULL);
-	frame->fork = malloc(sizeof(pthread_mutex_t) * frame->nbr_of_philo);
-	if (!frame->fork)
+	(*frame)->philo = malloc(sizeof(t_philo1) * (*frame)->nbr_of_philo);
+	if (!(*frame)->philo)
 		return (NULL);
-	frame = mutex_init(frame);
-	if (!frame)
+	(*frame)->fork = malloc(sizeof(pthread_mutex_t) * (*frame)->nbr_of_philo);
+	if (!(*frame)->fork)
 		return (NULL);
-	return (frame);
+	(*frame) = mutex_init((*frame));
+	if (!(*frame))
+		return (NULL);
+	return ((*frame));
 }

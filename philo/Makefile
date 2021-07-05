@@ -6,14 +6,14 @@
 #    By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/28 15:34:12 by amouhtal          #+#    #+#              #
-#    Updated: 2021/06/28 15:34:14 by amouhtal         ###   ########.fr        #
+#    Updated: 2021/07/05 11:31:07 by amouhtal         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 CC = gcc
 FLAGS = -Wall -Wextra -Werror
-SRCS = main.c util.c
+SRCS = main.c util.c philo_util.c
 OBJS = $(SRCS:.c=.o)
 
 %.o:%.c *.h

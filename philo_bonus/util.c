@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:14:12 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/03 17:42:05 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/05 17:18:58 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,10 @@ void	kill_process(t_frame *frame)
 	i = 0;
 	while (i < (frame)->nbr_of_philo)
 		kill(frame->pids[i++], SIGKILL);
+	sem_destroy(frame->main);
+	sem_destroy(frame->print);
+	sem_destroy(frame->forks);
+
 }
 
 int	ft_free(t_frame *frame, char *msg)
@@ -96,29 +100,29 @@ t_frame	*init_philo(t_frame *frame)
 	return (frame);
 }
 
-t_frame	*init_frame(t_frame *frame, int ac, char **av)
+t_frame	*init_frame(t_frame **frame, int ac, char **av)
 {
-	frame = (t_frame *)malloc(sizeof(t_frame));
-	if (!frame)
+	*frame = (t_frame *)malloc(sizeof(t_frame));
+	if (!*frame)
 		return (NULL);
 	if (ac < 5 || ac > 6)
 	{
 		printf("wrong numbers of arg\n");
 		return (NULL);
 	}
-	frame->nbr_of_philo = ft_atoi(av[1]);
-	frame->time_to_die = ft_atoi(av[2]);
-	frame->time_to_eat = ft_atoi(av[3]);
-	frame->time_to_sleep = ft_atoi(av[4]);
+	(*frame)->nbr_of_philo = ft_atoi(av[1]);
+	(*frame)->time_to_die = ft_atoi(av[2]);
+	(*frame)->time_to_eat = ft_atoi(av[3]);
+	(*frame)->time_to_sleep = ft_atoi(av[4]);
 	if (av[5])
-		frame->nbr_of_meal = ft_atoi(av[5]);
-	frame->already_eated = 0;
-	frame->nbr_of_meal = -1;
-	frame->philo = malloc(sizeof(t_philo) * frame->nbr_of_philo);
-	if (!frame->philo)
+		(*frame)->nbr_of_meal = ft_atoi(av[5]);
+	(*frame)->already_eated = 0;
+	(*frame)->nbr_of_meal = -1;
+	(*frame)->philo = malloc(sizeof(t_philo) * (*frame)->nbr_of_philo);
+	if (!(*frame)->philo)
 		return (NULL);
-	frame = init_philo(frame);
-	if (!frame)
+	(*frame) = init_philo((*frame));
+	if (!(*frame))
 		return (NULL);
-	return (frame);
+	return ((*frame));
 }

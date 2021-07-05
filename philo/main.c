@@ -6,42 +6,15 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 11:50:21 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/04 15:26:31 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/05 17:50:16 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-// 292416
-void ft_putnbr_fd(uint64_t n, int fd)
+
+int	check_if_sated(t_philo1 *philo)
 {
-	char str[13];
-	int length;
-
-	if (n == 0)
-		str[0] = '0';
-	length = 0;
-	while (n != 0)
-	{
-		str[length++] = '0' + (n % 10);
-		n = (n / 10);
-	}
-	if (length > 0)
-		length--;
-	while (length >= 0)
-		write(fd, &str[length--], 1);
-}
-
-uint64_t get_time(void)
-{
-	struct timeval current_time;
-
-	gettimeofday(&current_time, NULL);
-	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
-}
-
-int check_if_sated(t_philo1 *philo)
-{
-	t_frame *frame;
+	t_frame	*frame;
 
 	frame = philo->frame;
 	if (philo->one_meal == 0)
@@ -53,31 +26,37 @@ int check_if_sated(t_philo1 *philo)
 	{
 		pthread_mutex_lock(&frame->print);
 		write(1, "similation done\n", 16);
-		return (0);
+		pthread_mutex_unlock(&frame->main);
 	}
 	return (1);
 }
 
-int check_if_starving(t_philo1 *philo)
+void	*check_if_starving(void *arg)
 {
-	uint64_t time;
-	t_frame *frame;
+	uint64_t	time;
+	t_frame		*frame;
+	t_philo1	*philo;
 
+	philo = (t_philo1 *)arg;
 	frame = philo->frame;
-	time = get_time();
-	if (time > philo->time_end)
+	while (1)
 	{
-		pthread_mutex_lock(&frame->print);
-		philo->timestamp = time - frame->start;
-		printf("%llu died %d\n", philo->timestamp, philo->value + 1);
-		return (0);
+		time = get_time();
+		if (time > philo->time_end)
+		{
+			pthread_mutex_lock(&frame->print);
+			philo->timestamp = time - frame->start;
+			printf("%llu died %d\n", philo->timestamp, philo->value + 1);
+			pthread_mutex_unlock(&frame->main);
+		}
+		if (frame->nbr_of_meal == philo->nbr_of_meal)
+			check_if_sated(philo);
+		usleep(500);
 	}
-	if (frame->nbr_of_meal == philo->nbr_of_meal)
-		return (check_if_sated(philo));
-	return (1);
+	return (NULL);
 }
 
-static void print_routine(t_philo1 *philo, char msg, int sleep)
+static void	print_routine(t_philo1 *philo, char msg, int sleep)
 {
 	pthread_mutex_lock(&philo->frame->print);
 	philo->timestamp = get_time() - philo->frame->start;
@@ -98,12 +77,15 @@ static void print_routine(t_philo1 *philo, char msg, int sleep)
 		usleep(sleep * 1000);
 }
 
-static void *routine(void *arg)
+static void	*routine(void *arg)
 {
-	t_philo1 *philo;
+	t_philo1	*philo;
+	pthread_t	th;
 
 	philo = (t_philo1 *)arg;
 	philo->time_end = time_to_die(philo->frame->time_to_die);
+	pthread_create(&th, NULL, &check_if_starving, arg);
+	pthread_detach(th);
 	while (1)
 	{
 		pthread_mutex_lock(&philo->frame->fork[philo->value]);
@@ -121,17 +103,19 @@ static void *routine(void *arg)
 	return (NULL);
 }
 
-int main(int ac, char **av)
+int	main(int ac, char **av)
 {
-	t_frame *frame;
-	pthread_t th;
-	int i;
+	t_frame		*frame;
+	pthread_t	th;
+	int			i;
 
 	frame = NULL;
-	frame = intial(frame, ac, av);
+	frame = intial(&frame, ac, av);
 	if (!frame)
-		return (ft_free(frame, NULL));
+		return (ft_free(&*frame, NULL));
 	pthread_mutex_init(&frame->print, NULL);
+	pthread_mutex_init(&frame->main, NULL);
+	pthread_mutex_lock(&frame->main);
 	frame->start = get_time();
 	i = -1;
 	while (++i < frame->nbr_of_philo)
@@ -141,14 +125,6 @@ int main(int ac, char **av)
 		pthread_detach(th);
 		usleep(100);
 	}
-	while (1)
-	{
-		i = 0;
-		while (i < frame->nbr_of_philo)
-		{
-			// usleep(1);
-			if (!check_if_starving(&frame->philo[i++]))
-				return (ft_free(frame, NULL));
-		}
-	}
+	pthread_mutex_lock(&frame->main);
+	return (ft_free(frame, NULL));
 }

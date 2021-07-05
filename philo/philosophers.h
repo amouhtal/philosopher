@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 12:00:06 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/03 11:54:52 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/05 17:56:36 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,9 @@ typedef struct s_frame
 int						ft_atoi(const char *str);
 int						ft_free(t_frame *frame, char *msg);
 t_frame					*mutex_init(t_frame *frame);
-t_frame					*intial(t_frame *frame, int ac, char **av);
+t_frame					*intial(t_frame **frame, int ac, char **av);
 uint64_t				time_to_die(int appended_time);
 uint64_t				get_time(void);
+int						ft_init_arg(t_frame **frame, char **av);
+void 					ft_putnbr_fd(uint64_t n, int fd);
 #endif
