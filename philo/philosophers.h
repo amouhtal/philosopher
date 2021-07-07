@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 12:00:06 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/05 17:56:36 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/06 13:01:07 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,12 @@
 
 typedef struct s_philo1
 {
-	int				value;
 	struct s_frame	*frame;
 	uint64_t		timestamp;
 	uint64_t		time_end;
-	uint64_t		nbr_of_meal;
-	int				lfork;
+	int				nbr_of_meal;
 	int				rfork;
+	int				index;
 	int				one_meal;
 }	t_philo1;
 
@@ -41,7 +40,7 @@ typedef struct s_frame
 	uint64_t		time_to_eat;
 	uint64_t		time_to_sleep;
 	uint64_t		nbr_of_cycle;
-	id_t			nbr_of_meal;
+	int				nbr_of_meal;
 	int				*index;
 	pthread_mutex_t	*fork;
 	t_philo1		*philo;
@@ -57,5 +56,5 @@ t_frame					*intial(t_frame **frame, int ac, char **av);
 uint64_t				time_to_die(int appended_time);
 uint64_t				get_time(void);
 int						ft_init_arg(t_frame **frame, char **av);
-void 					ft_putnbr_fd(uint64_t n, int fd);
+void					ft_putnbr_fd(uint64_t n, int fd);
 #endif

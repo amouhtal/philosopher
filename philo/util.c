@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 15:01:03 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/05 17:56:49 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/06 15:12:37 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,12 +55,11 @@ t_frame	*mutex_init(t_frame *frame)
 		if (pthread_mutex_init(&frame->fork[i], NULL))
 			return (NULL);
 		frame->philo[i].frame = frame;
-		frame->philo[i].value = i;
+		frame->philo[i].index = i + 1;
 		frame->philo[i].one_meal = 0;
 		frame->philo[i].nbr_of_meal = 0;
-		frame->philo[i].rfork = (frame->philo[i].value + 1)
+		frame->philo[i].rfork = (frame->philo[i].index)
 			% frame->nbr_of_philo;
-		frame->philo[i].lfork = frame->philo[i].value;
 		i++;
 	}
 	return (frame);

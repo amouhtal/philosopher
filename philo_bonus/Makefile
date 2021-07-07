@@ -6,12 +6,12 @@
 #    By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/07/02 13:02:04 by amouhtal          #+#    #+#              #
-#    Updated: 2021/07/03 12:08:57 by amouhtal         ###   ########.fr        #
+#    Updated: 2021/07/06 17:38:24 by amouhtal         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo_bonus
-SRCS = main.c util.c
+SRCS = main.c util.c philo_util.c
 OBJS = $(SRCS:.c=.o)
 
 

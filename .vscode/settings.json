@@ -1,5 +1,6 @@
 {
 	"files.associations": {
-		"philosopher.h": "c"
+		"philosopher.h": "c",
+		"__config": "c"
 	}
 }

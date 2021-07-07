@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/05 11:29:32 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/05 18:07:50 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/07 18:21:23 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,25 +68,6 @@ int	ft_free(t_frame *frame, char *msg)
 		return (1);
 	}
 	return (0);
-}
-
-void	ft_putnbr_fd(uint64_t n, int fd)
-{
-	char	str[13];
-	int		length;
-
-	if (n == 0)
-		str[0] = '0';
-	length = 0;
-	while (n != 0)
-	{
-		str[length++] = '0' + (n % 10);
-		n = (n / 10);
-	}
-	if (length > 0)
-		length--;
-	while (length >= 0)
-		write(fd, &str[length--], 1);
 }
 
 uint64_t	get_time(void)

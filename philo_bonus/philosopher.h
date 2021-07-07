@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:02:56 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/05 17:43:22 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/07 18:21:43 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,14 @@
 # define SEMAPRINT "semamain"
 # define SEMAFORK "semafork"
 # define SEMAMAIN "semaprint"
+# define SEMEATS "semeats"
 # define NOT -1
 
+int				g_already_eated;
 typedef struct s_philo
 {
-	int				value;
+	int				index;
 	int				nbr_of_meal;
-	int				time_of_thread;
 	int				one_meal;
 	struct s_frame	*frame;
 	uint64_t		time_end;
@@ -47,12 +48,12 @@ typedef struct s_frame
 	uint64_t		time_to_sleep;
 	int				*pids;
 	int				nbr_of_meal;
-	int already_eated;
 	int				nbr_of_philo;
 	pid_t			pid;
 	sem_t			*forks;
 	sem_t			*main;
 	sem_t			*print;
+	sem_t			*nbr_to_eats;
 }	t_frame;
 
 int			ft_atoi(const char *str);
@@ -60,4 +61,5 @@ int			ft_free(t_frame *frame, char *msg);
 uint64_t	time_to_die(int appended_time);
 uint64_t	get_time(void);
 t_frame		*init_frame(t_frame **frame, int ac, char **av);
+void		ft_putnbr_fd(uint64_t n, int fd);
 #endif
