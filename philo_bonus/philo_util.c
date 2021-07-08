@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/05 18:13:41 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/07 19:00:08 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/08 17:44:09 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,17 +41,19 @@ void	kill_process(t_frame *frame)
 	int	i;
 
 	i = 0;
-	sem_wait(frame->main);
-	while (i < (frame)->nbr_of_philo)
-		kill(frame->pids[i++], SIGKILL);
-	sem_unlink(SEMAMAIN);
-	sem_unlink(SEMAFORK);
-	sem_unlink(SEMAPRINT);
+	if (frame)
+	{
+		sem_wait(frame->main);
+		while (i < (frame)->nbr_of_philo)
+			kill(frame->pids[i++], SIGKILL);
+		sem_unlink(SEMAMAIN);
+		sem_unlink(SEMAFORK);
+		sem_unlink(SEMAPRINT);
+	}
 }
 
 int	ft_free(t_frame *frame, char *msg)
 {
-
 	kill_process(frame);
 	if (frame && frame->philo)
 	{

@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/05 11:29:32 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/07 18:21:23 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/08 15:35:41 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,16 @@ int	ft_init_arg(t_frame **frame, char **av)
 	(*frame)->time_to_sleep = ft_atoi(av[4]);
 	(*frame)->nbr_of_meal = -1;
 	if (av[5])
+	{
 		(*frame)->nbr_of_meal = ft_atoi(av[5]);
+		if ((*frame)->nbr_of_meal < 0)
+			return (0);
+	}
+	else
+		(*frame)->nbr_of_meal = -1;
 	if ((*frame)->nbr_of_philo <= 0 || (*frame)->time_to_die < 0 \
 		|| (*frame)->time_to_eat < 0 || (*frame)->time_to_sleep < 0)
-	{
-		printf("check arguments\n");
 		return (0);
-	}
 	return (1);
 }
 

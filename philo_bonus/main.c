@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:02:51 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/07 18:59:53 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/08 17:48:48 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,12 @@
 static	void	check_if_sated(t_philo *philo)
 {
 	t_frame	*frame;
-	int i;
+	int		i;
 
-	i = 0;
+	i = -1;
 	frame = philo->frame;
-	while (i < frame->nbr_of_philo)
-	{
+	while (++i < frame->nbr_of_philo)
 		sem_wait(frame->nbr_to_eats);
-		i++;
-	}
 	sem_wait(frame->print);
 	printf("similation done\n");
 	sem_post(frame->main);
@@ -64,13 +61,13 @@ static	void	print_routine(t_philo *philo, char msg, int sleep)
 	ft_putnbr_fd(philo->index + 1, 1);
 	write(1, " ", 1);
 	if (msg == '0')
-		write(1, "has taken a fork\n",17);
+		write(1, "has taken a fork\n", 17);
 	else if (msg == '1')
-		write(1, "is eating\n",10);
+		write(1, "is eating\n", 10);
 	else if (msg == '2')
-		write(1, "is sleeping\n",12);
+		write(1, "is sleeping\n", 12);
 	else
-		write(1, "is thinking\n",12);
+		write(1, "is thinking\n", 12);
 	sem_post(philo->frame->print);
 	if (sleep != NOT)
 		usleep(sleep * 1000);
@@ -92,8 +89,7 @@ static void	routine(t_philo *philo, t_frame *frame)
 		print_routine(philo, '1', frame->time_to_eat);
 		if (frame->nbr_of_meal != NOT)
 			philo->nbr_of_meal++;
-		// if (frame->nbr_of_meal == philo->nbr_of_meal)
-			sem_post(frame->nbr_to_eats);
+		sem_post(frame->nbr_to_eats);
 		sem_post(frame->forks);
 		sem_post(frame->forks);
 		print_routine(philo, '2', frame->time_to_sleep);
@@ -110,7 +106,7 @@ int	main(int ac, char **av)
 	frame = NULL;
 	frame = init_frame(&frame, ac, av);
 	if (!frame)
-		return (ft_free(frame, "allocation failed !\n"));
+		return (ft_free(frame, "Check arguments !\n"));
 	frame->main = sem_open(SEMAMAIN, O_CREAT, 0644, 1);
 	frame->forks = sem_open(SEMAFORK, O_CREAT, 0644, frame->nbr_of_philo);
 	frame->print = sem_open(SEMAPRINT, O_CREAT, 0644, 1);

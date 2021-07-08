@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:02:56 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/07 18:21:43 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/08 15:39:35 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,9 @@ typedef struct s_frame
 	pthread_mutex_t	*fork;
 	uint64_t		start;
 	uint64_t		time_of_thread;
-	uint64_t		time_to_die;
-	uint64_t		time_to_eat;
-	uint64_t		time_to_sleep;
+	int				time_to_die;
+	int				time_to_eat;
+	int				time_to_sleep;
 	int				*pids;
 	int				nbr_of_meal;
 	int				nbr_of_philo;

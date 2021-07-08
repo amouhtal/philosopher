@@ -6,13 +6,13 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 11:50:21 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/06 17:07:55 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/08 17:42:27 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-int	check_if_sated(t_philo1 *philo)
+static int	check_if_sated(t_philo1 *philo)
 {
 	t_frame	*frame;
 
@@ -31,7 +31,7 @@ int	check_if_sated(t_philo1 *philo)
 	return (1);
 }
 
-void	*check_if_starving(void *arg)
+static void	*check_if_starving(void *arg)
 {
 	uint64_t	time;
 	t_frame		*frame;
@@ -62,13 +62,13 @@ static void	print_routine(t_philo1 *philo, char msg, int sleep)
 	pthread_mutex_lock(&philo->frame->print);
 	philo->timestamp = get_time() - philo->frame->start;
 	if (msg == '0')
-		printf("%llu\t%d\thas taken a fork\n",philo->timestamp, philo->index);
+		printf("%llu\t%d\thas taken a fork\n", philo->timestamp, philo->index);
 	else if (msg == '1')
-		printf("%llu\t%d\tis eating\n",philo->timestamp, philo->index);
+		printf("%llu\t%d\tis eating\n", philo->timestamp, philo->index);
 	else if (msg == '2')
-		printf("%llu\t%d\tis sleeping\n",philo->timestamp, philo->index);
+		printf("%llu\t%d\tis sleeping\n", philo->timestamp, philo->index);
 	else
-		printf("%llu\t%d\tis thinking\n",philo->timestamp, philo->index);
+		printf("%llu\t%d\tis thinking\n", philo->timestamp, philo->index);
 	pthread_mutex_unlock(&philo->frame->print);
 	if (sleep != NOT)
 		usleep(sleep * 1000);
@@ -109,7 +109,7 @@ int	main(int ac, char **av)
 	frame = NULL;
 	frame = intial(&frame, ac, av);
 	if (!frame)
-		return (ft_free(&*frame, NULL));
+		return (ft_free(&*frame, "Check arguments \n"));
 	pthread_mutex_init(&frame->print, NULL);
 	pthread_mutex_init(&frame->main, NULL);
 	pthread_mutex_lock(&frame->main);

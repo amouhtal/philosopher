@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 15:01:03 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/06 15:12:37 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/08 15:41:00 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ uint64_t	time_to_die(int appended_time)
 	return (time + appended_time);
 }
 
-t_frame	*mutex_init(t_frame *frame)
+static t_frame	*mutex_init(t_frame *frame)
 {
 	int	i;
 
@@ -71,10 +71,7 @@ t_frame	*intial(t_frame **frame, int ac, char **av)
 	if (!(*frame))
 		return (NULL);
 	if (ac < 5 || ac > 6)
-	{
-		printf("wrong numbers of arg\n");
 		return (NULL);
-	}
 	if (!ft_init_arg((frame), av))
 		return (NULL);
 	(*frame)->philo = malloc(sizeof(t_philo1) * (*frame)->nbr_of_philo);

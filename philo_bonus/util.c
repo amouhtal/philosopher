@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:14:12 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/07 18:21:33 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/08 17:47:09 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,25 +54,27 @@ t_frame	*init_frame(t_frame **frame, int ac, char **av)
 	if (!*frame)
 		return (NULL);
 	if (ac < 5 || ac > 6)
-	{
-		printf("wrong numbers of arg\n");
 		return (NULL);
-	}
 	(*frame)->nbr_of_philo = ft_atoi(av[1]);
 	(*frame)->time_to_die = ft_atoi(av[2]);
 	(*frame)->time_to_eat = ft_atoi(av[3]);
 	(*frame)->time_to_sleep = ft_atoi(av[4]);
-	(*frame)->nbr_of_meal = -1;
 	if (av[5])
+	{
 		(*frame)->nbr_of_meal = ft_atoi(av[5]);
+		if ((*frame)->nbr_of_meal < 0)
+			return (NULL);
+	}
+	else
+		(*frame)->nbr_of_meal = -1;
+	if ((*frame)->nbr_of_philo <= 0 || (*frame)->time_to_die < 0 \
+		|| (*frame)->time_to_eat < 0 || (*frame)->time_to_sleep < 0)
+		return (NULL);
 	g_already_eated = 0;
 	(*frame)->philo = malloc(sizeof(t_philo) * (*frame)->nbr_of_philo);
 	if (!(*frame)->philo)
 		return (NULL);
-	(*frame) = init_philo((*frame));
-	if (!(*frame))
-		return (NULL);
-	return ((*frame));
+	return (init_philo((*frame)));
 }
 
 void	ft_putnbr_fd(uint64_t n, int fd)
