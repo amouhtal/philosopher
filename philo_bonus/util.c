@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:14:12 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/08 17:47:09 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/09 12:44:24 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,8 @@ t_frame	*init_frame(t_frame **frame, int ac, char **av)
 	*frame = (t_frame *)malloc(sizeof(t_frame));
 	if (!*frame)
 		return (NULL);
-	if (ac < 5 || ac > 6)
-		return (NULL);
+	if (!is_alph(av, ac))
+		return (0);
 	(*frame)->nbr_of_philo = ft_atoi(av[1]);
 	(*frame)->time_to_die = ft_atoi(av[2]);
 	(*frame)->time_to_eat = ft_atoi(av[3]);

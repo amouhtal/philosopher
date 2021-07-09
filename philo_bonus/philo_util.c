@@ -6,11 +6,30 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/05 18:13:41 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/08 17:44:09 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/09 12:44:32 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
+
+int	is_alph(char **av, int ac)
+{
+	int	i;
+	int	j;
+
+	j = 0;
+	i = 0;
+	if (ac < 5 || ac > 6)
+		return (0);
+	while (av[++j])
+	{
+		i = 0;
+		while (av[j][i])
+			if (av[j][i] < '0' || av[j][i++] > '9')
+				return (0);
+	}
+	return (1);
+}
 
 int	ft_atoi(const char *str)
 {
@@ -36,7 +55,7 @@ int	ft_atoi(const char *str)
 	return (res * sign);
 }
 
-void	kill_process(t_frame *frame)
+static void	kill_process(t_frame *frame)
 {
 	int	i;
 

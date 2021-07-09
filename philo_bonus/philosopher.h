@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:02:56 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/08 15:39:35 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/09 12:44:43 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,4 +62,5 @@ uint64_t	time_to_die(int appended_time);
 uint64_t	get_time(void);
 t_frame		*init_frame(t_frame **frame, int ac, char **av);
 void		ft_putnbr_fd(uint64_t n, int fd);
+int			is_alph(char **av, int ac);
 #endif

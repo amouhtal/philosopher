@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 15:01:03 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/08 15:41:00 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/09 17:44:15 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,14 +36,6 @@ int	ft_atoi(const char *str)
 	return (res * sign);
 }
 
-uint64_t	time_to_die(int appended_time)
-{
-	uint64_t	time;
-
-	time = get_time();
-	return (time + appended_time);
-}
-
 static t_frame	*mutex_init(t_frame *frame)
 {
 	int	i;
@@ -63,6 +55,28 @@ static t_frame	*mutex_init(t_frame *frame)
 		i++;
 	}
 	return (frame);
+}
+
+int	ft_init_arg(t_frame **frame, char **av)
+{
+	if (!is_alph(av))
+		return (0);
+	(*frame)->nbr_of_philo = ft_atoi(av[1]);
+	(*frame)->time_to_die = ft_atoi(av[2]);
+	(*frame)->time_to_eat = ft_atoi(av[3]);
+	(*frame)->time_to_sleep = ft_atoi(av[4]);
+	if (av[5])
+	{
+		(*frame)->nbr_of_meal = ft_atoi(av[5]);
+		if ((*frame)->nbr_of_meal < 0)
+			return (0);
+	}
+	else
+		(*frame)->nbr_of_meal = -1;
+	if ((*frame)->nbr_of_philo <= 0 || (*frame)->time_to_die < 0 \
+		|| (*frame)->time_to_eat < 0 || (*frame)->time_to_sleep < 0)
+		return (0);
+	return (1);
 }
 
 t_frame	*intial(t_frame **frame, int ac, char **av)

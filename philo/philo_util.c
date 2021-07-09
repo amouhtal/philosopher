@@ -6,30 +6,26 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/05 11:29:32 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/08 15:35:41 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/09 15:12:29 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-int	ft_init_arg(t_frame **frame, char **av)
+int	is_alph(char **av)
 {
-	(*frame)->nbr_of_philo = ft_atoi(av[1]);
-	(*frame)->time_to_die = ft_atoi(av[2]);
-	(*frame)->time_to_eat = ft_atoi(av[3]);
-	(*frame)->time_to_sleep = ft_atoi(av[4]);
-	(*frame)->nbr_of_meal = -1;
-	if (av[5])
+	int	i;
+	int	j;
+
+	j = 0;
+	i = 0;
+	while (av[++j])
 	{
-		(*frame)->nbr_of_meal = ft_atoi(av[5]);
-		if ((*frame)->nbr_of_meal < 0)
-			return (0);
+		i = 0;
+		while (av[j][i])
+			if (av[j][i] < '0' || av[j][i++] > '9')
+				return (0);
 	}
-	else
-		(*frame)->nbr_of_meal = -1;
-	if ((*frame)->nbr_of_philo <= 0 || (*frame)->time_to_die < 0 \
-		|| (*frame)->time_to_eat < 0 || (*frame)->time_to_sleep < 0)
-		return (0);
 	return (1);
 }
 
@@ -53,7 +49,6 @@ int	ft_free(t_frame *frame, char *msg)
 	if (frame && frame->philo)
 	{
 		free(frame->philo);
-		frame->philo = NULL;
 	}
 	if (frame && frame->fork)
 	{
@@ -79,4 +74,12 @@ uint64_t	get_time(void)
 
 	gettimeofday(&current_time, NULL);
 	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
+}
+
+uint64_t	time_to_die(int appended_time)
+{
+	uint64_t	time;
+
+	time = get_time();
+	return (time + appended_time);
 }

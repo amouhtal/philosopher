@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 11:50:21 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/08 17:42:27 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/09 18:11:55 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static int	check_if_sated(t_philo1 *philo)
 	if (frame->already_eated == frame->nbr_of_philo)
 	{
 		pthread_mutex_lock(&frame->print);
-		write(1, "similation done\n", 16);
+		write(1, "simulation done\n", 16);
 		pthread_mutex_unlock(&frame->main);
 	}
 	return (1);
@@ -57,7 +57,7 @@ static void	*check_if_starving(void *arg)
 	return (NULL);
 }
 
-static void	print_routine(t_philo1 *philo, char msg, int sleep)
+void	print_routine(t_philo1 *philo, char msg, int sleep)
 {
 	pthread_mutex_lock(&philo->frame->print);
 	philo->timestamp = get_time() - philo->frame->start;
@@ -84,16 +84,9 @@ static void	*routine(void *arg)
 	pthread_detach(th);
 	while (1)
 	{
-		pthread_mutex_lock(&philo->frame->fork[philo->index - 1]);
-		print_routine(philo, '0', NOT);
-		pthread_mutex_lock(&philo->frame->fork[philo->rfork]);
-		print_routine(philo, '0', NOT);
-		philo->time_end = time_to_die(philo->frame->time_to_die);
-		print_routine(philo, '1', philo->frame->time_to_eat);
-		pthread_mutex_unlock(&philo->frame->fork[philo->index - 1]);
-		pthread_mutex_unlock(&philo->frame->fork[philo->rfork]);
-		if (philo->frame->nbr_of_meal != NOT)
-			philo->nbr_of_meal++;
+		lock_fork(philo->index - 1, philo->rfork, philo);
+		ft_eat(philo);
+		unlock_fork(philo->index - 1, philo->rfork, philo);
 		print_routine(philo, '2', philo->frame->time_to_sleep);
 		print_routine(philo, '3', NOT);
 	}
@@ -107,8 +100,7 @@ int	main(int ac, char **av)
 	int			i;
 
 	frame = NULL;
-	frame = intial(&frame, ac, av);
-	if (!frame)
+	if (!intial(&frame, ac, av))
 		return (ft_free(&*frame, "Check arguments \n"));
 	pthread_mutex_init(&frame->print, NULL);
 	pthread_mutex_init(&frame->main, NULL);

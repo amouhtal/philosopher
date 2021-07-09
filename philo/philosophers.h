@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 12:00:06 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/08 15:41:44 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/09 15:21:46 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,4 +55,9 @@ uint64_t				time_to_die(int appended_time);
 uint64_t				get_time(void);
 int						ft_init_arg(t_frame **frame, char **av);
 void					ft_putnbr_fd(uint64_t n, int fd);
+void					unlock_fork(int first_fork, int seconde_fork, t_philo1	*philo);
+void					lock_fork(int first_fork, int seconde_fork, t_philo1	*philo);
+void					ft_eat(t_philo1	*philo);
+int						is_alph(char **av);
+void					print_routine(t_philo1 *philo, char msg, int sleep);
 #endif
