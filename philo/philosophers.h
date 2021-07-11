@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 12:00:06 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/09 15:21:46 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/11 12:43:19 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ typedef struct s_philo1
 	int				rfork;
 	int				index;
 	int				one_meal;
+	int				is_eat;
+	pthread_mutex_t eat;
 }	t_philo1;
 
 typedef struct s_frame
@@ -48,16 +50,18 @@ typedef struct s_frame
 	int				already_eated;
 }					t_frame;
 
-int						ft_atoi(const char *str);
-int						ft_free(t_frame *frame, char *msg);
-t_frame					*intial(t_frame **frame, int ac, char **av);
-uint64_t				time_to_die(int appended_time);
-uint64_t				get_time(void);
-int						ft_init_arg(t_frame **frame, char **av);
-void					ft_putnbr_fd(uint64_t n, int fd);
-void					unlock_fork(int first_fork, int seconde_fork, t_philo1	*philo);
-void					lock_fork(int first_fork, int seconde_fork, t_philo1	*philo);
-void					ft_eat(t_philo1	*philo);
-int						is_alph(char **av);
-void					print_routine(t_philo1 *philo, char msg, int sleep);
+int					ft_atoi(const char *str);
+int					ft_free(t_frame *frame, char *msg);
+t_frame				*intial(t_frame **frame, int ac, char **av);
+uint64_t			time_to_die(int appended_time);
+uint64_t			get_time(void);
+int					ft_init_arg(t_frame **frame, char **av);
+void				ft_putnbr_fd(uint64_t n, int fd);
+void				unlock_fork(int first_fork,
+						int seconde_fork, t_philo1	*philo);
+void				lock_fork(int first_fork,
+						int seconde_fork, t_philo1	*philo);
+void				ft_eat(t_philo1	*philo);
+int					is_alph(char **av);
+void				print_routine(t_philo1 *philo, char msg, int sleep);
 #endif

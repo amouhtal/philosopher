@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 11:50:21 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/09 18:11:55 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/11 12:49:14 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,13 +43,15 @@ static void	*check_if_starving(void *arg)
 	while (1)
 	{
 		time = get_time();
+		pthread_mutex_lock(&philo->eat);
 		if (time > philo->time_end)
 		{
 			pthread_mutex_lock(&frame->print);
 			philo->timestamp = time - frame->start;
-			printf("%llu died %d\n", philo->timestamp, philo->index);
+			printf("%llu\t%d\tdied\n", philo->timestamp, philo->index);
 			pthread_mutex_unlock(&frame->main);
 		}
+		pthread_mutex_unlock(&philo->eat);
 		if (frame->nbr_of_meal == philo->nbr_of_meal)
 			check_if_sated(philo);
 		usleep(1000);
@@ -80,6 +82,8 @@ static void	*routine(void *arg)
 	pthread_t	th;
 
 	philo = (t_philo1 *)arg;
+	philo->is_eat = 0;
+	pthread_mutex_init(&philo->eat, NULL);
 	pthread_create(&th, NULL, &check_if_starving, arg);
 	pthread_detach(th);
 	while (1)

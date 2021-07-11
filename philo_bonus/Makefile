@@ -6,7 +6,7 @@
 #    By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/07/02 13:02:04 by amouhtal          #+#    #+#              #
-#    Updated: 2021/07/08 18:36:54 by amouhtal         ###   ########.fr        #
+#    Updated: 2021/07/10 16:01:59 by amouhtal         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ FLAGS = -Wall -Wextra -Werror
 	$(CC) $(FLAGS) -c $< -o $@
 
 all: *.h
-	@$(MAKE) $(NAME) 
+	@$(MAKE) $(NAME)
 $(NAME) : $(OBJS)
 	$(CC) $(FLAGS) $(OBJS) -o $(NAME) 
 clean:

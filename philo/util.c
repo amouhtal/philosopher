@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 15:01:03 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/09 17:44:15 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/10 17:46:16 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,11 @@ int	ft_init_arg(t_frame **frame, char **av)
 t_frame	*intial(t_frame **frame, int ac, char **av)
 {
 	*frame = (t_frame *)malloc(sizeof(t_frame));
-	if (!(*frame))
-		return (NULL);
+	(*frame)->fork = NULL;
+	(*frame)->philo = NULL;
 	if (ac < 5 || ac > 6)
+		return (NULL);
+	if (!(*frame))
 		return (NULL);
 	if (!ft_init_arg((frame), av))
 		return (NULL);

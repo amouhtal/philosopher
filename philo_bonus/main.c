@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:02:51 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/09 11:13:54 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/11 12:35:50 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,10 @@ static	void	check_if_sated(t_philo *philo)
 	i = -1;
 	frame = philo->frame;
 	if (frame->nbr_of_meal)
+	{
 		while (++i < frame->nbr_of_philo)
 			sem_wait(frame->nbr_to_eats);
+	}
 	sem_wait(frame->print);
 	printf("similation done\n");
 	sem_post(frame->main);
@@ -43,7 +45,7 @@ static	void	*check_if_starving(void *arg)
 		{
 			sem_wait(frame->print);
 			philo->timestamp = time - frame->start;
-			printf("%llu died %d\n", philo->timestamp, philo->index + 1);
+			printf("%llu\t%d\tdied\n", philo->timestamp, philo->index + 1);
 			sem_post(frame->main);
 		}
 		if (frame->nbr_of_meal == philo->nbr_of_meal)
@@ -80,6 +82,7 @@ static void	routine(t_philo *philo, t_frame *frame)
 
 	pthread_create(&th, NULL, &check_if_starving, (void *)philo);
 	pthread_detach(th);
+	philo->one_meal = 0;
 	while (1)
 	{
 		sem_wait(frame->forks);
@@ -90,7 +93,8 @@ static void	routine(t_philo *philo, t_frame *frame)
 		print_routine(philo, '1', frame->time_to_eat);
 		if (frame->nbr_of_meal != NOT)
 			philo->nbr_of_meal++;
-		sem_post(frame->nbr_to_eats);
+		if (frame->nbr_of_meal <= philo->nbr_of_meal)
+			sem_post(frame->nbr_to_eats);
 		sem_post(frame->forks);
 		sem_post(frame->forks);
 		print_routine(philo, '2', frame->time_to_sleep);
