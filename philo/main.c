@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 11:50:21 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/11 12:49:14 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/12 14:48:41 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,9 @@ static void	*check_if_starving(void *arg)
 			printf("%llu\t%d\tdied\n", philo->timestamp, philo->index);
 			pthread_mutex_unlock(&frame->main);
 		}
-		pthread_mutex_unlock(&philo->eat);
 		if (frame->nbr_of_meal == philo->nbr_of_meal)
 			check_if_sated(philo);
+		pthread_mutex_unlock(&philo->eat);
 		usleep(1000);
 	}
 	return (NULL);
@@ -64,13 +64,13 @@ void	print_routine(t_philo1 *philo, char msg, int sleep)
 	pthread_mutex_lock(&philo->frame->print);
 	philo->timestamp = get_time() - philo->frame->start;
 	if (msg == '0')
-		printf("%llu\t%d\thas taken a fork\n", philo->timestamp, philo->index);
+		printf("%llu %d has taken a fork\n", philo->timestamp, philo->index);
 	else if (msg == '1')
-		printf("%llu\t%d\tis eating\n", philo->timestamp, philo->index);
+		printf("%llu %d is eating\n", philo->timestamp, philo->index);
 	else if (msg == '2')
-		printf("%llu\t%d\tis sleeping\n", philo->timestamp, philo->index);
+		printf("%llu %d tis sleeping\n", philo->timestamp, philo->index);
 	else
-		printf("%llu\t%d\tis thinking\n", philo->timestamp, philo->index);
+		printf("%llu %d is thinking\n", philo->timestamp, philo->index);
 	pthread_mutex_unlock(&philo->frame->print);
 	if (sleep != NOT)
 		usleep(sleep * 1000);
@@ -113,7 +113,8 @@ int	main(int ac, char **av)
 	i = -1;
 	while (++i < frame->nbr_of_philo)
 	{
-		if (pthread_create(&th, NULL, &routine, (void *)(&frame->philo[i])))
+		if (pthread_create(&th, NULL, &routine,
+				(void *)(&frame->philo[i])))
 			return (ft_free(frame, "fail to create thread\n"));
 		pthread_detach(th);
 		usleep(100);

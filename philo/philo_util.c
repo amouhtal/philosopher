@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/05 11:29:32 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/11 12:32:40 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/11 14:18:39 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,6 @@ int	ft_free(t_frame *frame, char *msg)
 		printf("%s", msg);
 		return (1);
 	}
-	// puts("here4");
-
 	return (0);
 }
 

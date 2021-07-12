@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:14:12 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/09 12:44:24 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/12 16:22:38 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,16 +30,24 @@ uint64_t	time_to_die(int appended_time)
 
 t_frame	*init_philo(t_frame *frame)
 {
-	int	i;
+	int		i;
+	char	*halfpart;
+	char	*part;
 
 	i = 0;
 	while (i < frame->nbr_of_philo)
 	{
+		halfpart = ft_itoa(i);
+		part = ft_strjoin("sem", halfpart);
+		sem_unlink(part);
+		frame->philo[i].is_eating = sem_open(part, O_CREAT, 0644, 1);
 		frame->philo[i].frame = frame;
 		frame->philo[i].index = i;
 		frame->philo[i].one_meal = 0;
 		frame->philo[i].nbr_of_meal = 0;
 		i++;
+		free(halfpart);
+		free(part);
 	}
 	sem_unlink(SEMAMAIN);
 	sem_unlink(SEMAFORK);

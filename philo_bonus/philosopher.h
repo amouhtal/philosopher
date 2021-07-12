@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:02:56 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/09 12:44:43 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/12 16:10:15 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@
 # define SEMAFORK "semafork"
 # define SEMAMAIN "semaprint"
 # define SEMEATS "semeats"
+# define SEMEATING "semeating"
+
 # define NOT -1
 
 int				g_already_eated;
@@ -35,12 +37,12 @@ typedef struct s_philo
 	struct s_frame	*frame;
 	uint64_t		time_end;
 	uint64_t		timestamp;
+	sem_t			*is_eating;
 }	t_philo;
 
 typedef struct s_frame
 {
 	t_philo			*philo;
-	pthread_mutex_t	*fork;
 	uint64_t		start;
 	uint64_t		time_of_thread;
 	int				time_to_die;
@@ -63,4 +65,6 @@ uint64_t	get_time(void);
 t_frame		*init_frame(t_frame **frame, int ac, char **av);
 void		ft_putnbr_fd(uint64_t n, int fd);
 int			is_alph(char **av, int ac);
+char		*ft_strjoin(char const *s1, char const *s2);
+char		*ft_itoa(int n);
 #endif

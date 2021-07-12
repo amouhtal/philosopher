@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:02:51 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/11 12:35:50 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/12 16:14:08 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ static	void	*check_if_starving(void *arg)
 	philo->time_end = time_to_die(frame->time_to_die);
 	while (1)
 	{
+		sem_wait(philo->is_eating);
 		time = get_time();
 		if (time > philo->time_end)
 		{
@@ -48,9 +49,10 @@ static	void	*check_if_starving(void *arg)
 			printf("%llu\t%d\tdied\n", philo->timestamp, philo->index + 1);
 			sem_post(frame->main);
 		}
+		sem_post(philo->is_eating);
 		if (frame->nbr_of_meal == philo->nbr_of_meal)
 			check_if_sated(philo);
-		usleep(1000);
+		usleep(600);
 	}
 	return (NULL);
 }
@@ -60,9 +62,9 @@ static	void	print_routine(t_philo *philo, char msg, int sleep)
 	sem_wait(philo->frame->print);
 	philo->timestamp = get_time() - philo->frame->start;
 	ft_putnbr_fd(philo->timestamp, 1);
-	write(1, "\t", 1);
+	write(1, " ", 1);
 	ft_putnbr_fd(philo->index + 1, 1);
-	write(1, "\t", 1);
+	write(1, " ", 1);
 	if (msg == '0')
 		write(1, "has taken a fork\n", 17);
 	else if (msg == '1')
@@ -89,8 +91,10 @@ static void	routine(t_philo *philo, t_frame *frame)
 		print_routine(philo, '0', NOT);
 		sem_wait(frame->forks);
 		print_routine(philo, '0', NOT);
+		sem_wait(philo->is_eating);
 		philo->time_end = time_to_die(frame->time_to_die);
 		print_routine(philo, '1', frame->time_to_eat);
+		sem_post(philo->is_eating);
 		if (frame->nbr_of_meal != NOT)
 			philo->nbr_of_meal++;
 		if (frame->nbr_of_meal <= philo->nbr_of_meal)
