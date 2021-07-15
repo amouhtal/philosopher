@@ -6,27 +6,32 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:02:51 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/12 16:14:08 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/15 19:10:06 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
 
-static	void	check_if_sated(t_philo *philo)
+static	void	*check_if_sated(void *arg)
 {
 	t_frame	*frame;
-	int		i;
+	t_philo	*philo;
 
-	i = -1;
+	philo = (t_philo *)arg;
 	frame = philo->frame;
-	if (frame->nbr_of_meal)
+	philo->one_meal = 0;
+	while (1)
 	{
-		while (++i < frame->nbr_of_philo)
-			sem_wait(frame->nbr_to_eats);
+		if (frame->nbr_of_meal == philo->nbr_of_meal)
+		{
+			if (philo->one_meal == 0)
+			{
+				g_already_eated++;
+				philo->one_meal++;
+			}
+		}
 	}
-	sem_wait(frame->print);
-	printf("similation done\n");
-	sem_post(frame->main);
+	return (NULL);
 }
 
 static	void	*check_if_starving(void *arg)
@@ -40,6 +45,8 @@ static	void	*check_if_starving(void *arg)
 	philo->time_end = time_to_die(frame->time_to_die);
 	while (1)
 	{
+		if (frame->nbr_of_meal == philo->nbr_of_meal)
+			check_if_sated(philo);
 		sem_wait(philo->is_eating);
 		time = get_time();
 		if (time > philo->time_end)
@@ -50,8 +57,6 @@ static	void	*check_if_starving(void *arg)
 			sem_post(frame->main);
 		}
 		sem_post(philo->is_eating);
-		if (frame->nbr_of_meal == philo->nbr_of_meal)
-			check_if_sated(philo);
 		usleep(600);
 	}
 	return (NULL);
@@ -73,6 +78,12 @@ static	void	print_routine(t_philo *philo, char msg, int sleep)
 		write(1, "is sleeping\n", 12);
 	else
 		write(1, "is thinking\n", 12);
+	if (g_already_eated && msg == '1')
+	{
+		printf("similation done\n");
+		sem_post(philo->frame->main);
+		return ;
+	}
 	sem_post(philo->frame->print);
 	if (sleep != NOT)
 		usleep(sleep * 1000);
@@ -84,7 +95,8 @@ static void	routine(t_philo *philo, t_frame *frame)
 
 	pthread_create(&th, NULL, &check_if_starving, (void *)philo);
 	pthread_detach(th);
-	philo->one_meal = 0;
+	pthread_create(&th, NULL, &check_if_sated, (void *)philo);
+	pthread_detach(th);
 	while (1)
 	{
 		sem_wait(frame->forks);

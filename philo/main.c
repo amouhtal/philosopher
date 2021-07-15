@@ -6,29 +6,31 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 11:50:21 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/12 14:48:41 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/15 19:11:19 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-static int	check_if_sated(t_philo1 *philo)
+void	*check_if_sated(void *arg)
 {
-	t_frame	*frame;
+	t_frame		*frame;
+	t_philo1	*philo;
 
+	philo = (t_philo1 *)arg;
 	frame = philo->frame;
-	if (philo->one_meal == 0)
+	while (1)
 	{
-		frame->already_eated++;
-		philo->one_meal++;
+		if (frame->nbr_of_meal == philo->nbr_of_meal)
+		{
+			if (philo->one_meal == 0)
+			{
+				frame->already_eated++;
+				philo->one_meal++;
+			}
+		}
 	}
-	if (frame->already_eated == frame->nbr_of_philo)
-	{
-		pthread_mutex_lock(&frame->print);
-		write(1, "simulation done\n", 16);
-		pthread_mutex_unlock(&frame->main);
-	}
-	return (1);
+	return (NULL);
 }
 
 static void	*check_if_starving(void *arg)
@@ -51,8 +53,6 @@ static void	*check_if_starving(void *arg)
 			printf("%llu\t%d\tdied\n", philo->timestamp, philo->index);
 			pthread_mutex_unlock(&frame->main);
 		}
-		if (frame->nbr_of_meal == philo->nbr_of_meal)
-			check_if_sated(philo);
 		pthread_mutex_unlock(&philo->eat);
 		usleep(1000);
 	}
@@ -68,9 +68,15 @@ void	print_routine(t_philo1 *philo, char msg, int sleep)
 	else if (msg == '1')
 		printf("%llu %d is eating\n", philo->timestamp, philo->index);
 	else if (msg == '2')
-		printf("%llu %d tis sleeping\n", philo->timestamp, philo->index);
+		printf("%llu %d is sleeping\n", philo->timestamp, philo->index);
 	else
 		printf("%llu %d is thinking\n", philo->timestamp, philo->index);
+	if (philo->frame->nbr_of_philo == philo->frame->already_eated && msg == '1')
+	{
+		write(1, "simulation done\n", 16);
+		pthread_mutex_unlock(&philo->frame->main);
+		return ;
+	}
 	pthread_mutex_unlock(&philo->frame->print);
 	if (sleep != NOT)
 		usleep(sleep * 1000);
@@ -80,11 +86,15 @@ static void	*routine(void *arg)
 {
 	t_philo1	*philo;
 	pthread_t	th;
+	int			i;
 
+	i = 0;
 	philo = (t_philo1 *)arg;
 	philo->is_eat = 0;
 	pthread_mutex_init(&philo->eat, NULL);
 	pthread_create(&th, NULL, &check_if_starving, arg);
+	pthread_detach(th);
+	pthread_create(&th, NULL, check_if_sated, arg);
 	pthread_detach(th);
 	while (1)
 	{
@@ -93,6 +103,7 @@ static void	*routine(void *arg)
 		unlock_fork(philo->index - 1, philo->rfork, philo);
 		print_routine(philo, '2', philo->frame->time_to_sleep);
 		print_routine(philo, '3', NOT);
+		i++;
 	}
 	return (NULL);
 }
