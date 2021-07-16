@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:02:56 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/12 16:10:15 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/16 18:24:44 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,10 @@
 # define SEMAMAIN "semaprint"
 # define SEMEATS "semeats"
 # define SEMEATING "semeating"
+# define ONETIME "onetime"
 
 # define NOT -1
 
-int				g_already_eated;
 typedef struct s_philo
 {
 	int				index;
@@ -51,15 +51,16 @@ typedef struct s_frame
 	int				*pids;
 	int				nbr_of_meal;
 	int				nbr_of_philo;
+	int				already_eated;
 	pid_t			pid;
 	sem_t			*forks;
 	sem_t			*main;
 	sem_t			*print;
-	sem_t			*nbr_to_eats;
+	sem_t			*nbr_to_eat;
 }	t_frame;
 
 int			ft_atoi(const char *str);
-int			ft_free(t_frame *frame, char *msg);
+int			ft_end(t_frame *frame, char *msg);
 uint64_t	time_to_die(int appended_time);
 uint64_t	get_time(void);
 t_frame		*init_frame(t_frame **frame, int ac, char **av);
@@ -67,4 +68,9 @@ void		ft_putnbr_fd(uint64_t n, int fd);
 int			is_alph(char **av, int ac);
 char		*ft_strjoin(char const *s1, char const *s2);
 char		*ft_itoa(int n);
+void		ft_take_fork(t_philo *philo);
+void		ft_eat(t_philo *philo);
+void		ft_release_fork(t_frame *frame);
+void		print_routine(t_philo *philo, char msg, int sleep);
+void		*check_if_sated(void *arg);
 #endif

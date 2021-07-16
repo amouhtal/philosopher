@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 12:00:06 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/12 16:09:53 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/16 12:18:46 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ typedef struct s_philo1
 	int				rfork;
 	int				index;
 	int				one_meal;
-	int				is_eat;
 	pthread_mutex_t	eat;
 	pthread_t		th;
 }	t_philo1;

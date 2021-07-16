@@ -6,31 +6,27 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:02:51 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/15 19:10:06 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/16 18:26:39 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
 
-static	void	*check_if_sated(void *arg)
+void	*check_if_sated(void *arg)
 {
 	t_frame	*frame;
-	t_philo	*philo;
+	int		i;
 
-	philo = (t_philo *)arg;
-	frame = philo->frame;
-	philo->one_meal = 0;
-	while (1)
+	i = 0;
+	frame = (t_frame *)arg;
+	while (i < frame->nbr_of_philo)
 	{
-		if (frame->nbr_of_meal == philo->nbr_of_meal)
-		{
-			if (philo->one_meal == 0)
-			{
-				g_already_eated++;
-				philo->one_meal++;
-			}
-		}
+		sem_wait(frame->nbr_to_eat);
+		i++;
 	}
+	sem_wait(frame->print);
+	printf("simulation done\n");
+	sem_post(frame->main);
 	return (NULL);
 }
 
@@ -45,10 +41,8 @@ static	void	*check_if_starving(void *arg)
 	philo->time_end = time_to_die(frame->time_to_die);
 	while (1)
 	{
-		if (frame->nbr_of_meal == philo->nbr_of_meal)
-			check_if_sated(philo);
-		sem_wait(philo->is_eating);
 		time = get_time();
+		sem_wait(philo->is_eating);
 		if (time > philo->time_end)
 		{
 			sem_wait(frame->print);
@@ -62,7 +56,7 @@ static	void	*check_if_starving(void *arg)
 	return (NULL);
 }
 
-static	void	print_routine(t_philo *philo, char msg, int sleep)
+void	print_routine(t_philo *philo, char msg, int sleep)
 {
 	sem_wait(philo->frame->print);
 	philo->timestamp = get_time() - philo->frame->start;
@@ -78,12 +72,6 @@ static	void	print_routine(t_philo *philo, char msg, int sleep)
 		write(1, "is sleeping\n", 12);
 	else
 		write(1, "is thinking\n", 12);
-	if (g_already_eated && msg == '1')
-	{
-		printf("similation done\n");
-		sem_post(philo->frame->main);
-		return ;
-	}
 	sem_post(philo->frame->print);
 	if (sleep != NOT)
 		usleep(sleep * 1000);
@@ -95,24 +83,11 @@ static void	routine(t_philo *philo, t_frame *frame)
 
 	pthread_create(&th, NULL, &check_if_starving, (void *)philo);
 	pthread_detach(th);
-	pthread_create(&th, NULL, &check_if_sated, (void *)philo);
-	pthread_detach(th);
 	while (1)
 	{
-		sem_wait(frame->forks);
-		print_routine(philo, '0', NOT);
-		sem_wait(frame->forks);
-		print_routine(philo, '0', NOT);
-		sem_wait(philo->is_eating);
-		philo->time_end = time_to_die(frame->time_to_die);
-		print_routine(philo, '1', frame->time_to_eat);
-		sem_post(philo->is_eating);
-		if (frame->nbr_of_meal != NOT)
-			philo->nbr_of_meal++;
-		if (frame->nbr_of_meal <= philo->nbr_of_meal)
-			sem_post(frame->nbr_to_eats);
-		sem_post(frame->forks);
-		sem_post(frame->forks);
+		ft_take_fork(philo);
+		ft_eat(philo);
+		ft_release_fork(frame);
 		print_routine(philo, '2', frame->time_to_sleep);
 		print_routine(philo, '3', NOT);
 	}
@@ -127,11 +102,11 @@ int	main(int ac, char **av)
 	frame = NULL;
 	frame = init_frame(&frame, ac, av);
 	if (!frame)
-		return (ft_free(frame, "Check arguments !\n"));
+		return (ft_end(frame, "Check arguments !\n"));
 	frame->main = sem_open(SEMAMAIN, O_CREAT, 0644, 1);
 	frame->forks = sem_open(SEMAFORK, O_CREAT, 0644, frame->nbr_of_philo);
 	frame->print = sem_open(SEMAPRINT, O_CREAT, 0644, 1);
-	frame->nbr_to_eats = sem_open(SEMEATS, O_CREAT, 0644, 0);
+	frame->nbr_to_eat = sem_open(SEMEATING, O_CREAT, 0644, 0);
 	sem_wait(frame->main);
 	frame->pids = (int *)malloc(sizeof(int) * frame->nbr_of_philo);
 	frame->start = get_time();
@@ -144,5 +119,5 @@ int	main(int ac, char **av)
 			frame->pids[i++] = frame->pid;
 		usleep(100);
 	}
-	return (ft_free(frame, NULL));
+	return (ft_end(frame, NULL));
 }

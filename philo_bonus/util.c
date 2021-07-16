@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 14:14:12 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/12 16:22:38 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/16 17:33:02 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ t_frame	*init_frame(t_frame **frame, int ac, char **av)
 	if ((*frame)->nbr_of_philo <= 0 || (*frame)->time_to_die < 0 \
 		|| (*frame)->time_to_eat < 0 || (*frame)->time_to_sleep < 0)
 		return (NULL);
-	g_already_eated = 0;
+	(*frame)->already_eated = 0;
 	(*frame)->philo = malloc(sizeof(t_philo) * (*frame)->nbr_of_philo);
 	if (!(*frame)->philo)
 		return (NULL);

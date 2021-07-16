@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 11:50:21 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/15 19:11:19 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/16 18:18:32 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	*check_if_sated(void *arg)
 
 	philo = (t_philo1 *)arg;
 	frame = philo->frame;
-	while (1)
+	while (!philo->one_meal)
 	{
 		if (frame->nbr_of_meal == philo->nbr_of_meal)
 		{
@@ -29,6 +29,7 @@ void	*check_if_sated(void *arg)
 				philo->one_meal++;
 			}
 		}
+		usleep(100);
 	}
 	return (NULL);
 }
@@ -46,7 +47,8 @@ static void	*check_if_starving(void *arg)
 	{
 		time = get_time();
 		pthread_mutex_lock(&philo->eat);
-		if (time > philo->time_end)
+		if (time > philo->time_end
+			&& (philo->frame->nbr_of_philo != philo->frame->already_eated))
 		{
 			pthread_mutex_lock(&frame->print);
 			philo->timestamp = time - frame->start;
@@ -54,7 +56,7 @@ static void	*check_if_starving(void *arg)
 			pthread_mutex_unlock(&frame->main);
 		}
 		pthread_mutex_unlock(&philo->eat);
-		usleep(1000);
+		usleep(500);
 	}
 	return (NULL);
 }
@@ -90,12 +92,14 @@ static void	*routine(void *arg)
 
 	i = 0;
 	philo = (t_philo1 *)arg;
-	philo->is_eat = 0;
 	pthread_mutex_init(&philo->eat, NULL);
 	pthread_create(&th, NULL, &check_if_starving, arg);
 	pthread_detach(th);
-	pthread_create(&th, NULL, check_if_sated, arg);
-	pthread_detach(th);
+	if (philo->frame->nbr_of_meal != NOT)
+	{
+		pthread_create(&th, NULL, check_if_sated, arg);
+		pthread_detach(th);
+	}
 	while (1)
 	{
 		lock_fork(philo->index - 1, philo->rfork, philo);

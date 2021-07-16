@@ -6,7 +6,7 @@
 /*   By: amouhtal <amouhtal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/05 18:13:41 by amouhtal          #+#    #+#             */
-/*   Updated: 2021/07/12 16:22:20 by amouhtal         ###   ########.fr       */
+/*   Updated: 2021/07/16 18:26:08 by amouhtal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,11 +57,17 @@ int	ft_atoi(const char *str)
 
 static void	kill_process(t_frame *frame)
 {
-	int	i;
+	int			i;
+	pthread_t	th;
 
 	i = 0;
 	if (frame)
 	{
+		if (frame->nbr_of_meal != NOT)
+		{
+			pthread_create(&th, NULL, &check_if_sated, (void *)frame);
+			pthread_detach(th);
+		}
 		sem_wait(frame->main);
 		while (i < (frame)->nbr_of_philo)
 			kill(frame->pids[i++], SIGKILL);
@@ -71,7 +77,7 @@ static void	kill_process(t_frame *frame)
 	}
 }
 
-int	ft_free(t_frame *frame, char *msg)
+int	ft_end(t_frame *frame, char *msg)
 {
 	kill_process(frame);
 	if (frame && frame->philo)
